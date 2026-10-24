@@ -3,98 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal - SchoolConnect</title>
+    <title>Student Portal - SchoolConnect Zambia</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
 </head>
+
 <body class="bg-blue-50">
-    <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8">
+
+    <header class="bg-white p-4 shadow-sm flex justify-between items-center px-4 md:px-8">
         <h1 class="text-blue-900 font-bold text-xl">Student Portal</h1>
+
         <div class="flex items-center space-x-3">
-            <div class="text-right hidden sm:block">
-                <p class="text-sm font-bold">Joshua Phiri</p>
-                <p class="text-xs text-slate-500">Grade 12A</p>
+            <div class="text-right">
+                <p id="student-name" class="text-sm font-bold">Loading profile...</p>
+                <p id="student-grade" class="text-xs text-slate-500"></p>
             </div>
-            <img src="https://picsum.photos/40/40" class="w-10 h-10 rounded-full">
+
+            <button id="logout-button"
+                class="bg-red-600 text-white px-3 py-2 rounded-lg text-sm">
+                Logout
+            </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="educational-videos.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
-                <img src="https://api.iconify.design/fa6-solid/play.svg?color=%232563eb" class="w-8 h-8 mb-3" />
-                <p class="font-bold text-sm">Lessons</p>
-            </a>
-            <a href="examination-results.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
-                <img src="https://api.iconify.design/fa6-solid/square-poll-vertical.svg?color=%232563eb" class="w-8 h-8 mb-3" />
-                <p class="font-bold text-sm">Results</p>
-            </a>
-            <a href="timetables.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
-                <img src="https://api.iconify.design/fa6-solid/calendar-days.svg?color=%232563eb" class="w-8 h-8 mb-3" />
-                <p class="font-bold text-sm">Timetable</p>
-            </a>
-            <a href="announcements.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
-                <img src="https://api.iconify.design/fa6-solid/bullhorn.svg?color=%232563eb" class="w-8 h-8 mb-3" />
-                <p class="font-bold text-sm">Notices</p>
-            </a>
-        </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-sm">
-            <h2 class="text-lg font-bold mb-4">Continue Learning</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="group cursor-pointer">
-                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
-                        <img src="https://picsum.photos/400/225?1" class="object-cover w-full h-full">
-                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <img src="https://api.iconify.design/fa6-solid/play.svg?color=white" class="w-12 h-12" />
-                        </div>
-                    </div>
-                    <p class="font-bold">Calculus Basics - Part 2</p>
-                    <p class="text-xs text-slate-500">Mathematics • 15 mins</p>
-                </div>
-                <div class="group cursor-pointer">
-                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
-                        <img src="https://picsum.photos/400/225?2" class="object-cover w-full h-full">
-                    </div>
-                    <p class="font-bold">Structure of the Atom</p>
-                    <p class="text-xs text-slate-500">Chemistry • 22 mins</p>
-                </div>
-                <div class="group cursor-pointer">
-                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
-                        <img src="https://picsum.photos/400/225?3" class="object-cover w-full h-full">
-                    </div>
-                    <p class="font-bold">Zambian History Overview</p>
-                    <p class="text-xs text-slate-500">History • 10 mins</p>
-                </div>
-            </div>
-        </div>
+        <p id="status-message" role="status"
+           class="text-sm text-center text-slate-600">
+            Checking your account...
+        </p>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h2 class="font-bold mb-4">Results Teaser</h2>
-                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold">Grade 12 - Term 1 Results</span>
-                        <a href="examination-results.html" class="text-blue-600 text-sm font-bold">Check Now (K5)</a>
-                    </div>
-                </div>
+        <div id="dashboard-content" class="hidden space-y-8">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <a href="educational-videos.html"
+                   class="bg-white p-6 rounded-2xl shadow-sm text-center hover:scale-105 transition">
+                    <p class="text-3xl mb-3">▶️</p>
+                    <p class="font-bold text-sm">Lessons</p>
+                </a>
+
+                <a href="examination-results.html"
+                   class="bg-white p-6 rounded-2xl shadow-sm text-center hover:scale-105 transition">
+                    <p class="text-3xl mb-3">📊</p>
+                    <p class="font-bold text-sm">Results</p>
+                </a>
+
+                <a href="timetables.html"
+                   class="bg-white p-6 rounded-2xl shadow-sm text-center hover:scale-105 transition">
+                    <p class="text-3xl mb-3">📅</p>
+                    <p class="font-bold text-sm">Timetable</p>
+                </a>
+
+                <a href="announcements.html"
+                   class="bg-white p-6 rounded-2xl shadow-sm text-center hover:scale-105 transition">
+                    <p class="text-3xl mb-3">📢</p>
+                    <p class="font-bold text-sm">Notices</p>
+                </a>
+
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h2 class="font-bold mb-4">Attendance Tracker</h2>
-                <div class="flex items-center space-x-6">
-                    <div class="w-24 h-24 rounded-full border-8 border-green-500 flex items-center justify-center font-bold text-xl">94%</div>
-                    <div>
-                        <p class="text-sm text-slate-500">Target: 90%</p>
-                        <p class="text-sm text-slate-500">Absent Days: 3</p>
-                    </div>
-                </div>
+
+            <section class="bg-white p-8 rounded-2xl shadow-sm">
+                <h2 class="text-lg font-bold mb-4">Continue Learning</h2>
+
+                <p class="text-slate-600">
+                    Your educational lessons will appear here as we connect
+                    the learning content to the database.
+                </p>
+            </section>
+
+            <div class="grid md:grid-cols-2 gap-8">
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm">
+                    <h2 class="font-bold mb-4">Examination Results</h2>
+
+                    <p class="text-slate-600 text-sm mb-4">
+                        Access your examination results when they are available.
+                    </p>
+
+                    <a href="examination-results.html"
+                       class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg">
+                        View Results
+                    </a>
+                </section>
+
+                <section class="bg-white p-6 rounded-2xl shadow-sm">
+                    <h2 class="font-bold mb-4">Attendance Tracker</h2>
+
+                    <p class="text-slate-600">
+                        Your attendance information will appear here when
+                        the attendance database is connected.
+                    </p>
+                </section>
+
             </div>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 md:hidden">
-        <a href="dashboard-student.html"><img src="https://api.iconify.design/heroicons/home.svg" class="w-6 h-6 text-blue-600" /></a>
-        <a href="educational-videos.html"><img src="https://api.iconify.design/heroicons/academic-cap.svg" class="w-6 h-6" /></a>
-        <a href="examination-results.html"><img src="https://api.iconify.design/heroicons/chart-bar.svg" class="w-6 h-6" /></a>
-    </nav>
+    <script>
+        const studentName = document.getElementById("student-name");
+        const studentGrade = document.getElementById("student-grade");
+        const statusMessage = document.getElementById("status-message");
+        const dashboardContent = document.getElementById("dashboard-content");
+        const logoutButton = document.getElementById("logout-button");
+
+        async function loadStudentDashboard() {
+            try {
+                if (!window.supabaseClient) {
+                    throw new Error("Supabase connection was not found.");
+                }
+
+                const { data: authData, error: authError } =
+                    await window.supabaseClient.auth.getUser();
+
+                if (authError || !authData.user) {
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                const user = authData.user;
+
+                const { data: profile, error: profileError } =
+                    await window.supabaseClient
+                        .from("profiles")
+                        .select("full_name, role, grade")
+                        .eq("id", user.id)
+                        .single();
+
+                if (profileError || !profile) {
+                    statusMessage.textContent =
+                        "Your profile could not be loaded. Please contact support.";
+                    return;
+                }
+
+                if (profile.role !== "student") {
+                    statusMessage.textContent =
+                        "This dashboard is for student accounts only.";
+
+                    await window.supabaseClient.auth.signOut();
+
+                    setTimeout(() => {
+                        window.location.replace("login.html");
+                    }, 1500);
+
+                    return;
+                }
+
+                studentName.textContent =
+                    profile.full_name || user.email || "Student";
+
+                studentGrade.textContent = profile.grade
+                    ? "Grade " + profile.grade
+                    : "Grade not set";
+
+                statusMessage.textContent = "Welcome to SchoolConnect Zambia!";
+                dashboardContent.classList.remove("hidden");
+
+            } catch (error) {
+                console.error("Dashboard error:", error);
+
+                statusMessage.textContent =
+                    "Unable to load your dashboard. Please try again.";
+            }
+        }
+
+        logoutButton.addEventListener("click", async () => {
+            logoutButton.disabled = true;
+            logoutButton.textContent = "Logging out...";
+
+            const { error } =
+                await window.supabaseClient.auth.signOut();
+
+            if (error) {
+                statusMessage.textContent =
+                    "Logout failed. Please try again.";
+                logoutButton.disabled = false;
+                logoutButton.textContent = "Logout";
+                return;
+            }
+
+            window.location.replace("login.html");
+        });
+
+        loadStudentDashboard();
+    </script>
+
 </body>
-</html>
+    </html>
