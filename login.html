@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SchoolConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
+            <div class="text-center">
+                <a href="index.html" class="inline-flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-blue-600 rounded flex items-center justify-center text-white font-bold">SC</div>
+                    <span class="text-2xl font-bold text-blue-900">SchoolConnect</span>
+                </a>
+                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Sign in</h2>
+            </div>
+            <form class="mt-8 space-y-6">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <input type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Email address / Student ID">
+                    </div>
+                    <div>
+                        <input type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="Password">
+                    </div>
+                </div>
+                
+                <div class="text-sm text-center">
+                   <p class="text-slate-500">Select a role to preview demonstration:</p>
+                   <div class="mt-4 grid grid-cols-2 gap-2">
+                        <a href="dashboard-creator.html" class="bg-slate-100 p-2 rounded hover:bg-blue-50">Creator</a>
+                        <a href="dashboard-headteacher.html" class="bg-slate-100 p-2 rounded hover:bg-blue-50">Head Teacher</a>
+                        <a href="dashboard-teacher.html" class="bg-slate-100 p-2 rounded hover:bg-blue-50">Teacher</a>
+                        <a href="dashboard-student.html" class="bg-slate-100 p-2 rounded hover:bg-blue-50">Student</a>
+                   </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div>
+                    <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500 font-bold">OR SECURE LOGIN</span></div>
+                </div>
+
+                <button type="button" onclick="alert('Feature requires Secure Auth Database & SSL Integration')" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition">
+                    Sign In Securely
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

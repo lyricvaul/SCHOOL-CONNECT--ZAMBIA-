@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Help - SchoolConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+    <nav class="bg-white border-b py-4 px-8">
+        <a href="index.html" class="text-blue-900 font-bold">SchoolConnect Zambia</a>
+    </nav>
+    <main class="max-w-4xl mx-auto py-16 px-4">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div>
+                <h1 class="text-3xl font-bold mb-6">How can we help?</h1>
+                <p class="text-slate-600 mb-8">Our technical support team is available Monday to Friday, 08:00 to 17:00 Zambian time.</p>
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <img src="https://api.iconify.design/heroicons/envelope.svg" class="w-6 h-6 mt-1 text-blue-600" />
+                        <div>
+                            <p class="font-bold">Email Support</p>
+                            <p class="text-slate-500">support@schoolconnect.zm</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <img src="https://api.iconify.design/heroicons/phone.svg" class="w-6 h-6 mt-1 text-blue-600" />
+                        <div>
+                            <p class="font-bold">WhatsApp Hotline</p>
+                            <p class="text-slate-500">+260 971 000 000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border">
+                <h2 class="text-xl font-bold mb-4">Send a Message</h2>
+                <form class="space-y-4">
+                    <input type="text" placeholder="Your Name" class="w-full border p-2 rounded-md">
+                    <input type="email" placeholder="Your Email" class="w-full border p-2 rounded-md">
+                    <textarea placeholder="How can we help you today?" class="w-full border p-2 rounded-md h-32"></textarea>
+                    <button type="button" onclick="alert('Feature requires Email Service API Integration')" class="w-full bg-blue-600 text-white font-bold py-2 rounded-md">Send Ticket</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

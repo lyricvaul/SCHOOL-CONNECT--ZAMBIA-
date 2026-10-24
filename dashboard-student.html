@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - SchoolConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50">
+    <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8">
+        <h1 class="text-blue-900 font-bold text-xl">Student Portal</h1>
+        <div class="flex items-center space-x-3">
+            <div class="text-right hidden sm:block">
+                <p class="text-sm font-bold">Joshua Phiri</p>
+                <p class="text-xs text-slate-500">Grade 12A</p>
+            </div>
+            <img src="https://picsum.photos/40/40" class="w-10 h-10 rounded-full">
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="educational-videos.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
+                <img src="https://api.iconify.design/fa6-solid/play.svg?color=%232563eb" class="w-8 h-8 mb-3" />
+                <p class="font-bold text-sm">Lessons</p>
+            </a>
+            <a href="examination-results.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
+                <img src="https://api.iconify.design/fa6-solid/square-poll-vertical.svg?color=%232563eb" class="w-8 h-8 mb-3" />
+                <p class="font-bold text-sm">Results</p>
+            </a>
+            <a href="timetables.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
+                <img src="https://api.iconify.design/fa6-solid/calendar-days.svg?color=%232563eb" class="w-8 h-8 mb-3" />
+                <p class="font-bold text-sm">Timetable</p>
+            </a>
+            <a href="announcements.html" class="bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col items-center hover:scale-105 transition">
+                <img src="https://api.iconify.design/fa6-solid/bullhorn.svg?color=%232563eb" class="w-8 h-8 mb-3" />
+                <p class="font-bold text-sm">Notices</p>
+            </a>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm">
+            <h2 class="text-lg font-bold mb-4">Continue Learning</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
+                        <img src="https://picsum.photos/400/225?1" class="object-cover w-full h-full">
+                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <img src="https://api.iconify.design/fa6-solid/play.svg?color=white" class="w-12 h-12" />
+                        </div>
+                    </div>
+                    <p class="font-bold">Calculus Basics - Part 2</p>
+                    <p class="text-xs text-slate-500">Mathematics • 15 mins</p>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
+                        <img src="https://picsum.photos/400/225?2" class="object-cover w-full h-full">
+                    </div>
+                    <p class="font-bold">Structure of the Atom</p>
+                    <p class="text-xs text-slate-500">Chemistry • 22 mins</p>
+                </div>
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-video rounded-xl overflow-hidden bg-slate-200 mb-3">
+                        <img src="https://picsum.photos/400/225?3" class="object-cover w-full h-full">
+                    </div>
+                    <p class="font-bold">Zambian History Overview</p>
+                    <p class="text-xs text-slate-500">History • 10 mins</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h2 class="font-bold mb-4">Results Teaser</h2>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold">Grade 12 - Term 1 Results</span>
+                        <a href="examination-results.html" class="text-blue-600 text-sm font-bold">Check Now (K5)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h2 class="font-bold mb-4">Attendance Tracker</h2>
+                <div class="flex items-center space-x-6">
+                    <div class="w-24 h-24 rounded-full border-8 border-green-500 flex items-center justify-center font-bold text-xl">94%</div>
+                    <div>
+                        <p class="text-sm text-slate-500">Target: 90%</p>
+                        <p class="text-sm text-slate-500">Absent Days: 3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 md:hidden">
+        <a href="dashboard-student.html"><img src="https://api.iconify.design/heroicons/home.svg" class="w-6 h-6 text-blue-600" /></a>
+        <a href="educational-videos.html"><img src="https://api.iconify.design/heroicons/academic-cap.svg" class="w-6 h-6" /></a>
+        <a href="examination-results.html"><img src="https://api.iconify.design/heroicons/chart-bar.svg" class="w-6 h-6" /></a>
+    </nav>
+</body>
+</html>
