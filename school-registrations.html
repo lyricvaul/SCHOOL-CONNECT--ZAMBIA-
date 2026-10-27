@@ -27,11 +27,14 @@
 
         <section class="bg-white rounded-xl border border-slate-200 p-5">
             <h2 class="text-xl font-bold">School Registration Requests</h2>
+
             <p class="text-slate-600 mt-2">
                 View school applications submitted to SchoolConnect Zambia.
             </p>
 
-            <p id="status" class="mt-5 text-sm" aria-live="polite">
+            <p id="status"
+               class="mt-5 text-sm whitespace-pre-wrap"
+               aria-live="polite">
                 Verifying founder access...
             </p>
 
@@ -43,14 +46,20 @@
     async function start() {
         const status = document.getElementById("status");
         const results = document.getElementById("results");
+        const client = window.supabaseClient;
 
         try {
-            if (!window.supabaseClient) {
-                throw new Error("Supabase connection did not load.");
+            if (!client) {
+                throw new Error(
+                    "Supabase did not load. Check supabase.js and the connection."
+                );
             }
 
-            const { data: sessionData, error: sessionError } =
-                await window.supabaseClient.auth.getSession();
+            // Check the current login session.
+            const {
+                data: sessionData,
+                error: sessionError
+            } = await client.auth.getSession();
 
             if (sessionError) throw sessionError;
 
@@ -61,12 +70,15 @@
                 return;
             }
 
-            const { data: founder, error: founderError } =
-                await window.supabaseClient
-                    .from("platform_admins")
-                    .select("user_id, full_name, role")
-                    .eq("user_id", user.id)
-                    .maybeSingle();
+            // Verify that this account belongs to the platform founder.
+            const {
+                data: founder,
+                error: founderError
+            } = await client
+                .from("platform_admins")
+                .select("user_id, full_name, role")
+                .eq("user_id", user.id)
+                .maybeSingle();
 
             if (founderError) throw founderError;
 
@@ -75,92 +87,137 @@
                 founder.role !== "founder" ||
                 founder.full_name !== "M.I.K-BRAINS"
             ) {
-                status.textContent = "Access denied.";
+                status.textContent =
+                    "Access denied. Founder access could not be verified.";
                 return;
             }
 
             status.textContent =
                 "Founder access verified. Loading registration requests...";
 
-            const { data, error } =
-                await window.supabaseClient
-                    .from("school_registration_requests")
-                    .select("*")
-                    .order("created_at", { ascending: false });
+            // Load applications using the actual submission timestamp column.
+            const {
+                data,
+                error: registrationError
+            } = await client
+                .from("school_registration_requests")
+                .select(
+                    "id, school_name, institution_type, province, district, status, submitted_at, school_code"
+                )
+                .order("submitted_at", { ascending: false });
 
-            if (error) {
-                console.error(error);
+            if (registrationError) {
+                console.error(
+                    "Registration query failed:",
+                    registrationError
+                );
+
                 status.textContent =
-                    "Founder verified, but registration records could not be loaded. Check the database permissions.";
+                    "Founder access verified, but registration requests could not be loaded.\n\n" +
+                    "Error: " + registrationError.message +
+                    (registrationError.code
+                        ? "\nCode: " + registrationError.code
+                        : "") +
+                    (registrationError.details
+                        ? "\nDetails: " + registrationError.details
+                        : "") +
+                    (registrationError.hint
+                        ? "\nHint: " + registrationError.hint
+                        : "");
+
                 return;
             }
+
+            results.replaceChildren();
 
             if (!data || data.length === 0) {
-                status.textContent = "No registration requests found.";
+                status.textContent =
+                    "No registration requests found. New applications will appear here when submitted.";
                 return;
             }
 
+            // Build the table safely without inserting database text as HTML.
             const table = document.createElement("table");
             table.className =
                 "w-full text-sm text-left border-collapse";
 
-            const head = document.createElement("thead");
-            head.className = "bg-slate-100";
+            const columns = [
+                ["school_code", "School Code"],
+                ["school_name", "School Name"],
+                ["institution_type", "Institution Type"],
+                ["province", "Province"],
+                ["district", "District"],
+                ["status", "Application Status"],
+                ["submitted_at", "Date Submitted"]
+            ];
+
+            const thead = document.createElement("thead");
+            thead.className = "bg-slate-100";
 
             const headerRow = document.createElement("tr");
 
-            const columns = Object.keys(data[0]).filter(
-                key => !/email|phone|address|password|token|secret/i.test(key)
-            );
-
-            columns.forEach(column => {
+            columns.forEach(([, label]) => {
                 const th = document.createElement("th");
                 th.className =
                     "p-3 border border-slate-200 font-semibold";
-                th.textContent = column.replaceAll("_", " ");
+                th.textContent = label;
                 headerRow.appendChild(th);
             });
 
-            head.appendChild(headerRow);
-            table.appendChild(head);
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
 
-            const body = document.createElement("tbody");
+            const tbody = document.createElement("tbody");
 
             data.forEach(record => {
                 const row = document.createElement("tr");
-                row.className = "bg-white";
+                row.className = "hover:bg-slate-50";
 
-                columns.forEach(column => {
+                columns.forEach(([key]) => {
                     const cell = document.createElement("td");
                     cell.className =
                         "p-3 border border-slate-200";
-                    const value = record[column];
 
-                    cell.textContent =
-                        value === null || value === undefined
-                            ? "—"
-                            : String(value);
+                    const value = record[key];
+
+                    if (key === "submitted_at" && value) {
+                        const date = new Date(value);
+
+                        cell.textContent = Number.isNaN(date.getTime())
+                            ? String(value)
+                            : date.toLocaleString();
+                    } else {
+                        cell.textContent =
+                            value === null || value === undefined || value === ""
+                                ? "—"
+                                : String(value);
+                    }
 
                     row.appendChild(cell);
                 });
 
-                body.appendChild(row);
+                tbody.appendChild(row);
             });
 
-            table.appendChild(body);
+            table.appendChild(tbody);
             results.appendChild(table);
 
             status.textContent =
-                "Loaded " + data.length + " registration request(s).";
+                "Successfully loaded " +
+                data.length +
+                " registration request(s).";
 
         } catch (error) {
-            console.error(error);
+            console.error("School registration page error:", error);
+
             status.textContent =
-                "Unable to load registrations: " + error.message;
+                "Unable to load registrations.\n\n" +
+                "Error: " +
+                (error.message || "An unexpected error occurred.");
         }
     }
 
     start();
     </script>
 </body>
-</html>
+    </html>
