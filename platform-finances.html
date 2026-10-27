@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Platform Finances | SchoolConnect Zambia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f3f6fb;
+      color: #172033;
+    }
+    header, section {
+      background: white;
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 12px;
+    }
+    h1 { color: #164e63; }
+    button {
+      padding: 11px 16px;
+      margin: 5px 5px 5px 0;
+      border: 0;
+      border-radius: 7px;
+      background: #164e63;
+      color: white;
+      cursor: pointer;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: #e8f3f6;
+      padding: 14px;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+    .value { font-size: 22px; font-weight: bold; }
+    #message { overflow-wrap: anywhere; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th { background: #e8f3f6; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SchoolConnect Zambia</h1>
+    <h2>Platform Finances</h2>
+    <p id="access">Checking founder access...</p>
+    <button id="refresh" hidden>Refresh transactions</button>
+    <button id="back" hidden>Back to Founder Dashboard</button>
+  </header>
+
+  <section>
+    <h2>Financial Overview</h2>
+    <p id="message">Connecting securely...</p>
+    <div class="cards">
+      <div class="card">
+        <p>Transaction records</p>
+        <div class="value" id="count">—</div>
+      </div>
+      <div class="card">
+        <p>Successful transaction total</p>
+        <div class="value" id="total">—</div>
+        <small>Grouped by currency</small>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Transaction History</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Currency</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Reference</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script>
+    const client = window.supabaseClient;
+    const message = document.getElementById("message");
+    const access = document.getElementById("access");
+    const records = document.getElementById("records");
+
+    document.getElementById("back").onclick = () => {
+      location.href = "dashboard-founder.html";
+    };
+
+    document.getElementById("refresh").onclick = loadTransactions;
+
+    function cell(value) {
+      const td = document.createElement("td");
+      td.textContent = value == null || value === "" ? "—" : String(value);
+      return td;
+    }
+
+    function money(value, currency) {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return "—";
+      return amount.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + " " + (currency || "");
+    }
+
+    async function loadTransactions() {
+      records.replaceChildren();
+      message.textContent = "Loading transaction records...";
+      document.getElementById("count").textContent = "—";
+      document.getElementById("total").textContent = "—";
+
+      const { data, error } = await client
+        .from("transactions")
+        .select("id,transaction_type,amount,currency,payment_method,status,reference,description,created_at")
+        .order("created_at", { ascending: false })
+        .limit(500);
+
+      if (error) {
+        message.textContent =
+          "Could not load transactions: " + error.message;
+        return;
+      }
+
+      const rows = data || [];
+      document.getElementById("count").textContent = rows.length;
+
+      // Totals are separated by currency and include only records
+      // whose status is marked successful.
+      const totals = {};
+      rows.forEach(row => {
+        if (String(row.status || "").toLowerCase() === "successful") {
+          const currency = row.currency || "Unspecified";
+          totals[currency] = (totals[currency] || 0) + Number(row.amount || 0);
+        }
+      });
+
+      document.getElementById("total").textContent =
+        Object.keys(totals).length
+          ? Object.entries(totals)
+              .map(([currency, amount]) => money(amount, currency))
+              .join(" | ")
+          : "No successful records";
+
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.append(
+          cell(row.created_at ? new Date(row.created_at).toLocaleString() : "—"),
+          cell(row.transaction_type),
+          cell(money(row.amount, "")),
+          cell(row.currency),
+          cell(row.status),
+          cell(row.payment_method),
+          cell(row.reference),
+          cell(row.description)
+        );
+        records.appendChild(tr);
+      });
+
+      message.textContent = rows.length
+        ? "Transactions loaded. Amounts are grouped by currency; verify payment records before treating them as received revenue."
+        : "No transaction records were returned.";
+    }
+
+    async function start() {
+      if (!client) {
+        access.textContent = "Database client unavailable.";
+        message.textContent = "Check that supabase.js loads correctly.";
+        return;
+      }
+
+      const { data: sessionData, error: sessionError } =
+        await client.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        access.textContent = "Please sign in with your founder account.";
+        message.textContent = "Redirecting to login...";
+        location.href = "login.html";
+        return;
+      }
+
+      const user = sessionData.session.user;
+
+      const { data: admin, error: adminError } = await client
+        .from("platform_admins")
+        .select("full_name,role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (adminError || !admin ||
+          admin.role !== "founder" ||
+          admin.full_name !== "M.I.K-BRAINS") {
+        access.textContent = "Founder access denied.";
+        message.textContent = "This page is restricted to the verified founder.";
+        return;
+      }
+
+      access.textContent = "Connected — founder access verified.";
+      document.getElementById("refresh").hidden = false;
+      document.getElementById("back").hidden = false;
+
+      await loadTransactions();
+    }
+
+    start().catch(error => {
+      message.textContent = "Unexpected error: " + error.message;
+    });
+  </script>
+</body>
+  </html>
