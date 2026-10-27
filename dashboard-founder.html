@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Founder Dashboard | SchoolConnect Zambia</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .dashboard-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <div id="loading" class="min-h-screen flex items-center justify-center p-6">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-blue-900">
+                SchoolConnect Zambia
+            </h1>
+            <p class="mt-3 text-slate-600">
+                Verifying founder access...
+            </p>
+        </div>
+    </div>
+
+    <div id="access-denied"
+         class="hidden min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow p-6 text-center">
+            <h1 class="text-2xl font-bold text-red-700">
+                Access Denied
+            </h1>
+            <p id="denied-message" class="my-4 text-slate-600">
+                This account is not authorised to access the founder dashboard.
+            </p>
+            <a href="login.html"
+               class="inline-block rounded-lg bg-blue-900 px-5 py-3 text-white">
+                Return to Login
+            </a>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden min-h-screen">
+
+        <header class="bg-blue-950 text-white px-5 py-5">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm text-blue-200">
+                        SCHOOLCONNECT ZAMBIA
+                    </p>
+                    <h1 class="text-2xl font-bold">
+                        Founder Dashboard
+                    </h1>
+                    <p class="text-sm text-blue-200 mt-1">
+                        M.I.K-BRAINS | Platform Founder
+                    </p>
+                </div>
+
+                <button id="logout-button"
+                        class="rounded-lg bg-white px-4 py-2 font-semibold text-blue-950">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto p-5 md:p-8">
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold">
+                    Welcome, M.I.K-BRAINS
+                </h2>
+                <p class="mt-2 text-slate-600">
+                    Manage and monitor your SchoolConnect Zambia platform.
+                </p>
+                <p id="founder-email"
+                   class="mt-2 text-sm text-slate-500"></p>
+            </section>
+
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        Platform Status
+                    </p>
+                    <p class="text-xl font-bold text-emerald-700 mt-3">
+                        Connected
+                    </p>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Founder access verified.
+                    </p>
+                </div>
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        Institution Management
+                    </p>
+                    <h3 class="text-lg font-bold mt-3">
+                        School Registrations
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Registration management will be connected next.
+                    </p>
+                </div>
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        Platform Finances
+                    </p>
+                    <h3 class="text-lg font-bold mt-3">
+                        Revenue & Transactions
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Live financial records are not connected yet.
+                    </p>
+                </div>
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        User Management
+                    </p>
+                    <h3 class="text-lg font-bold mt-3">
+                        Platform Accounts
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        User management will be connected next.
+                    </p>
+                </div>
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        KNOWZA EDU
+                    </p>
+                    <h3 class="text-lg font-bold mt-3">
+                        Education Division
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Creator and learning features will be integrated.
+                    </p>
+                </div>
+
+                <div class="dashboard-card">
+                    <p class="text-sm text-slate-500">
+                        Security
+                    </p>
+                    <h3 class="text-lg font-bold mt-3">
+                        Founder Access
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Access is checked against the founder database record.
+                    </p>
+                </div>
+
+            </section>
+
+            <section class="mt-8 rounded-2xl bg-white border border-slate-200 p-5">
+                <h2 class="text-lg font-bold">
+                    Important
+                </h2>
+                <p class="mt-2 text-sm text-slate-600">
+                    This is the initial founder dashboard. Live statistics,
+                    institution approvals, user administration, and transaction
+                    management still need to be connected to the database.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        async function initialiseFounderDashboard() {
+            const loading = document.getElementById("loading");
+            const dashboard = document.getElementById("dashboard");
+            const denied = document.getElementById("access-denied");
+            const deniedMessage = document.getElementById("denied-message");
+
+            function denyAccess(message) {
+                loading.classList.add("hidden");
+                dashboard.classList.add("hidden");
+                deniedMessage.textContent = message;
+                denied.classList.remove("hidden");
+            }
+
+            try {
+                if (!window.supabaseClient) {
+                    throw new Error(
+                        "The Supabase connection was not loaded. Check supabase.js."
+                    );
+                }
+
+                const { data: sessionData, error: sessionError } =
+                    await window.supabaseClient.auth.getSession();
+
+                if (sessionError) throw sessionError;
+
+                const user = sessionData.session?.user;
+
+                if (!user) {
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                const { data: founder, error: founderError } =
+                    await window.supabaseClient
+                        .from("platform_admins")
+                        .select("user_id, full_name, role")
+                        .eq("user_id", user.id)
+                        .maybeSingle();
+
+                if (founderError) {
+                    console.error("Founder verification failed:", founderError);
+                    denyAccess(
+                        "Founder access could not be verified. Please try again later."
+                    );
+                    return;
+                }
+
+                if (
+                    !founder ||
+                    founder.role !== "founder" ||
+                    founder.full_name !== "M.I.K-BRAINS"
+                ) {
+                    denyAccess(
+                        "This account is not authorised to access the founder dashboard."
+                    );
+                    return;
+                }
+
+                document.getElementById("founder-email").textContent =
+                    "Signed in as: " + (user.email || "Verified account");
+
+                loading.classList.add("hidden");
+                denied.classList.add("hidden");
+                dashboard.classList.remove("hidden");
+
+            } catch (error) {
+                console.error("Dashboard error:", error);
+                denyAccess(
+                    error.message || "Unable to verify founder access."
+                );
+            }
+        }
+
+        document.getElementById("logout-button").addEventListener(
+            "click",
+            async function () {
+                const button = this;
+                button.disabled = true;
+                button.textContent = "Signing out...";
+
+                try {
+                    const { error } =
+                        await window.supabaseClient.auth.signOut();
+
+                    if (error) throw error;
+
+                    window.location.replace("login.html");
+                } catch (error) {
+                    console.error("Sign-out failed:", error);
+                    button.disabled = false;
+                    button.textContent = "Sign Out";
+                    alert("Sign-out failed. Please try again.");
+                }
+            }
+        );
+
+        initialiseFounderDashboard();
+    </script>
+
+</body>
+  </html>
