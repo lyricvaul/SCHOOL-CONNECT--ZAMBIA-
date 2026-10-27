@@ -16,8 +16,12 @@
 
             <div class="text-center">
                 <a href="index.html" class="inline-flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-blue-600 rounded flex items-center justify-center text-white font-bold">SC</div>
-                    <span class="text-2xl font-bold text-blue-900">SchoolConnect Zambia</span>
+                    <div class="w-10 h-10 bg-blue-600 rounded flex items-center justify-center text-white font-bold">
+                        SC
+                    </div>
+                    <span class="text-2xl font-bold text-blue-900">
+                        SchoolConnect Zambia
+                    </span>
                 </a>
 
                 <h1 class="mt-6 text-3xl font-extrabold text-gray-900">
@@ -30,8 +34,10 @@
             </div>
 
             <form id="login-form" class="mt-8 space-y-6">
+
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
+                    <label for="email"
+                           class="block text-sm font-medium text-gray-700">
                         Email address
                     </label>
 
@@ -46,7 +52,8 @@
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
+                    <label for="password"
+                           class="block text-sm font-medium text-gray-700">
                         Password
                     </label>
 
@@ -63,22 +70,26 @@
                 <button
                     id="login-button"
                     type="submit"
-                    class="w-full py-3 px-4 rounded-md text-white bg-blue-600 hover:bg-blue-700 font-medium"
+                    class="w-full py-3 px-4 rounded-md text-white bg-blue-600 hover:bg-blue-700 font-medium disabled:opacity-50"
                 >
                     Sign In Securely
                 </button>
 
-                <p id="login-message"
-                   role="status"
-                   aria-live="polite"
-                   class="text-sm text-center text-red-600"></p>
+                <p
+                    id="login-message"
+                    role="status"
+                    aria-live="polite"
+                    class="text-sm text-center text-red-600"
+                ></p>
 
                 <p class="text-sm text-center text-gray-600">
                     Don't have an account?
-                    <a href="registration.html" class="text-blue-600 hover:underline">
+                    <a href="registration.html"
+                       class="text-blue-600 hover:underline">
                         Register here
                     </a>
                 </p>
+
             </form>
         </div>
     </main>
@@ -108,40 +119,91 @@
             const password = document.getElementById("password").value;
 
             try {
+                // 1. Confirm the Supabase connection exists.
                 if (!window.supabaseClient) {
-                    throw new Error("The database connection is unavailable.");
+                    throw new Error(
+                        "Database connection unavailable. Please try again."
+                    );
                 }
 
+                // 2. Sign in the user.
                 const { data, error } =
                     await window.supabaseClient.auth.signInWithPassword({
                         email,
                         password
                     });
 
-                if (error) throw error;
+                if (error) {
+                    if (error.message === "Invalid login credentials") {
+                        throw new Error(
+                            "Incorrect email or password. Please try again."
+                        );
+                    }
+
+                    throw error;
+                }
 
                 if (!data.user) {
                     throw new Error("Unable to identify your account.");
                 }
 
-                const { data: profile, error: profileError } =
-                    await window.supabaseClient
-                        .from("profiles")
-                        .select("role")
-                        .eq("id", data.user.id)
-                        .single();
+                // 3. Check the founder record BEFORE the normal profile role.
+                const {
+                    data: founder,
+                    error: founderError
+                } = await window.supabaseClient
+                    .from("platform_admins")
+                    .select("user_id, full_name, role")
+                    .eq("user_id", data.user.id)
+                    .maybeSingle();
+
+                if (founderError) {
+                    console.error(
+                        "Founder verification error:",
+                        founderError
+                    );
+
+                    await window.supabaseClient.auth.signOut();
+
+                    throw new Error(
+                        "Founder access could not be verified. Please try again."
+                    );
+                }
+
+                // 4. Send the verified founder to the founder dashboard.
+                if (
+                    founder &&
+                    founder.role === "founder" &&
+                    founder.full_name === "M.I.K-BRAINS"
+                ) {
+                    window.location.replace("dashboard-founder.html");
+                    return;
+                }
+
+                // 5. If not the founder, check the normal user profile.
+                const {
+                    data: profile,
+                    error: profileError
+                } = await window.supabaseClient
+                    .from("profiles")
+                    .select("role")
+                    .eq("id", data.user.id)
+                    .single();
 
                 if (profileError || !profile) {
                     await window.supabaseClient.auth.signOut();
+
                     throw new Error(
                         "Your profile could not be found. Please contact support."
                     );
                 }
 
+                // 6. Redirect other users according to their assigned role.
                 const destination = dashboardRoutes[profile.role];
 
                 if (!destination) {
                     await window.supabaseClient.auth.signOut();
+
                     throw new Error(
                         "Your account role is not configured for dashboard access."
                     );
@@ -153,14 +215,13 @@
                 console.error("Login error:", error);
 
                 message.textContent =
-                    error.message === "Invalid login credentials"
-                        ? "Incorrect email or password. Please try again."
-                        : error.message || "Unable to sign in. Please try again.";
+                    error.message || "Unable to sign in. Please try again.";
 
                 button.disabled = false;
                 button.textContent = "Sign In Securely";
             }
         });
     </script>
+
 </body>
-</html>
+                    </html>
