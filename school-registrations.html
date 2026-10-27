@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Registrations | SCZ</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+    <header class="bg-blue-950 text-white p-5">
+        <div class="max-w-5xl mx-auto">
+            <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
+            <p class="mt-1">Founder Portal — School Registrations</p>
+            <p class="text-sm text-blue-200">M.I.K-BRAINS</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-5">
+        <a href="dashboard-founder.html"
+           class="inline-block mb-5 text-blue-800 underline">
+            ← Back to Founder Dashboard
+        </a>
+
+        <section class="bg-white rounded-xl border border-slate-200 p-5">
+            <h2 class="text-xl font-bold">School Registration Requests</h2>
+            <p class="text-slate-600 mt-2">
+                View school applications submitted to SchoolConnect Zambia.
+            </p>
+
+            <p id="status" class="mt-5 text-sm" aria-live="polite">
+                Verifying founder access...
+            </p>
+
+            <div id="results" class="mt-5 overflow-x-auto"></div>
+        </section>
+    </main>
+
+    <script>
+    async function start() {
+        const status = document.getElementById("status");
+        const results = document.getElementById("results");
+
+        try {
+            if (!window.supabaseClient) {
+                throw new Error("Supabase connection did not load.");
+            }
+
+            const { data: sessionData, error: sessionError } =
+                await window.supabaseClient.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            const user = sessionData.session?.user;
+
+            if (!user) {
+                window.location.replace("login.html");
+                return;
+            }
+
+            const { data: founder, error: founderError } =
+                await window.supabaseClient
+                    .from("platform_admins")
+                    .select("user_id, full_name, role")
+                    .eq("user_id", user.id)
+                    .maybeSingle();
+
+            if (founderError) throw founderError;
+
+            if (
+                !founder ||
+                founder.role !== "founder" ||
+                founder.full_name !== "M.I.K-BRAINS"
+            ) {
+                status.textContent = "Access denied.";
+                return;
+            }
+
+            status.textContent =
+                "Founder access verified. Loading registration requests...";
+
+            const { data, error } =
+                await window.supabaseClient
+                    .from("school_registration_requests")
+                    .select("*")
+                    .order("created_at", { ascending: false });
+
+            if (error) {
+                console.error(error);
+                status.textContent =
+                    "Founder verified, but registration records could not be loaded. Check the database permissions.";
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                status.textContent = "No registration requests found.";
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className =
+                "w-full text-sm text-left border-collapse";
+
+            const head = document.createElement("thead");
+            head.className = "bg-slate-100";
+
+            const headerRow = document.createElement("tr");
+
+            const columns = Object.keys(data[0]).filter(
+                key => !/email|phone|address|password|token|secret/i.test(key)
+            );
+
+            columns.forEach(column => {
+                const th = document.createElement("th");
+                th.className =
+                    "p-3 border border-slate-200 font-semibold";
+                th.textContent = column.replaceAll("_", " ");
+                headerRow.appendChild(th);
+            });
+
+            head.appendChild(headerRow);
+            table.appendChild(head);
+
+            const body = document.createElement("tbody");
+
+            data.forEach(record => {
+                const row = document.createElement("tr");
+                row.className = "bg-white";
+
+                columns.forEach(column => {
+                    const cell = document.createElement("td");
+                    cell.className =
+                        "p-3 border border-slate-200";
+                    const value = record[column];
+
+                    cell.textContent =
+                        value === null || value === undefined
+                            ? "—"
+                            : String(value);
+
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            });
+
+            table.appendChild(body);
+            results.appendChild(table);
+
+            status.textContent =
+                "Loaded " + data.length + " registration request(s).";
+
+        } catch (error) {
+            console.error(error);
+            status.textContent =
+                "Unable to load registrations: " + error.message;
+        }
+    }
+
+    start();
+    </script>
+</body>
+</html>
