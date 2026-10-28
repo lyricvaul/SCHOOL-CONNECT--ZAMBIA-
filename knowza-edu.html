@@ -7,110 +7,106 @@
 <title>KNOWZA EDU | Founder Centre</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
-
 <style>
-:root {
-  --purple: #6b21a8;
-  --dark: #4c1d95;
-  --light: #f3e8ff;
-  --bg: #faf8ff;
-  --text: #20152e;
-  --muted: #6b6475;
-  --border: #e9ddf5;
-  --red: #b91c1c;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  line-height: 1.55;
-}
-
-header {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: 17px 16px;
-}
-
-.header-inner, main {
-  max-width: 1050px;
-  margin: auto;
-}
-
-.brand {
-  color: var(--dark);
-  font-size: 21px;
-  font-weight: 800;
-}
-
-.subtitle, .muted {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-main { padding: 22px 16px 40px; }
-
-.topline, .panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 7px 15px;
-  border-radius: 40px;
-  background: var(--light);
-  color: var(--purple);
-  font-weight: 800;
-}
-
-a.button, button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  padding: 10px 14px;
-  background: #fff;
-  color: var(--dark);
-  font: inherit;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  min-height: 42px;
-}
-
-button.primary {
-  background: var(--purple);
-  color: white;
-  border-color: var(--purple);
-}
-
-button.danger {
-  color: var(--red);
-  border-color: #fecaca;
-}
-
-button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-.hero {
-  background: linear-gradient(135deg, #4c1d95, #7e22ce);
-  color: white;
-  border-radius: 20px;
-  padding: 27px 22px;
-  margin-bottom: 18px;
-}
-
-.eyebrow {
+:root{--purple:#6b21a8;--dark:#4c1d95;--light:#f3e8ff;--bg:#faf8ff;--text:#20152e;--muted:#6b6475;--border:#e9ddf5;--white:#fff;--green:#15803d;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.55}
+header{background:#fff;border-bottom:1px solid var(--border);padding:17px 16px}.header-inner,main{max-width:1050px;margin:auto}.brand{color:var(--dark);font-size:21px;font-weight:800}.subtitle,.muted{color:var(--muted);font-size:13px}
+main{padding:22px 16px 40px}.topline,.panel-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.badge{display:inline-block;padding:7px 15px;border-radius:40px;background:var(--light);color:var(--purple);font-weight:800}
+a.button,button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--border);border-radius:11px;padding:10px 14px;background:#fff;color:var(--dark);font:inherit;font-weight:700;text-decoration:none;cursor:pointer;min-height:42px}
+button.primary{background:var(--purple);color:white;border-color:var(--purple)}button.danger{color:var(--red);border-color:#fecaca}button:disabled{opacity:.55;cursor:not-allowed}
+.hero{background:linear-gradient(135deg,#4c1d95,#7e22ce);color:white;border-radius:20px;padding:27px 22px;margin-bottom:18px}.eyebrow{color:#ead7ff;font-size:12px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
+h1{font-size:clamp(28px,7vw,42px);line-height:1.15;margin:8px 0}.hero p{max-width:680px;color:#f5eaff;margin-bottom:0}h2{font-size:21px;margin:25px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}.card,.panel{background:#fff;border:1px solid var(--border);border-radius:16px;padding:17px}.icon{font-size:26px}.card h3{margin:7px 0;font-size:17px}.card p{color:var(--muted);font-size:14px}
+.status{display:inline-block;margin-top:8px;padding:4px 9px;border-radius:20px;background:#fff7ed;color:#9a3412;font-size:12px;font-weight:700}.panel{margin-top:18px}.panel-head h2{margin:0}.notice{padding:12px 14px;border-radius:10px;margin:12px 0;background:#f3e8ff;color:#4c1d95;font-size:14px}.notice.error{background:#fef2f2;color:#991b1b}.notice.success{background:#f0fdf4;color:#166534}
+.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.toolbar input,.toolbar select{padding:10px;border:1px solid var(--border);border-radius:10px;font:inherit;min-width:0;background:#fff}.toolbar input{flex:1;min-width:170px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--border);vertical-align:top;font-size:14px}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.pill{display:inline-block;border-radius:30px;padding:4px 9px;font-size:12px;font-weight:700;background:#f3f4f6;color:#374151}.pill.approved{background:#dcfce7;color:#166534}.pill.rejected,.pill.suspended{background:#fee2e2;color:#991b1b}.pill.pending{background:#fef3c7;color:#92400e}
+.empty{padding:24px;text-align:center;color:var(--muted);background:#fcfaff;border:1px dashed var(--border);border-radius:12px}.founder{background:var(--light);border-radius:15px;padding:18px;margin-top:18px}.founder strong{font-size:19px;color:var(--dark)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:24px 16px;border-top:1px solid var(--border)}[hidden]{display:none!important}
+@media(max-width:520px){main{padding:17px 11px 30px}.hero{padding:22px 17px}.card,.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="brand">KNOWZA EDU</div><div class="subtitle">Founder Centre · M.I.K-BRAINS</div></div></header>
+<main>
+<div id="loading" class="empty" role="status">Checking founder access…</div>
+<div id="message" class="notice error" role="alert" hidden></div>
+<div id="content" hidden>
+<div class="topline"><span class="badge">🔐 Verified Founder Area</span><a class="button" href="https://lyricvaul.github.io/SCHOOL-CONNECT--ZAMBIA-/dashboard-founder.html">← Founder Dashboard</a></div>
+<section class="hero"><div class="eyebrow">A separate education platform</div><h1>KNOWZA EDU</h1><p>A learning and educational-content platform designed to connect learners with teachers and educational creators across Zambia.</p></section>
+<h2>Platform Overview</h2>
+<section class="grid">
+<article class="card"><div class="icon">📚</div><h3>Educational Lessons</h3><p>Lessons, notes, PDFs, videos and other learning materials.</p><span class="status">Database foundation started</span></article>
+<article class="card"><div class="icon">👩‍🏫</div><h3>Teachers and Lecturers</h3><p>Creator applications for primary, secondary, college and university levels.</p><span class="status">Applications managed below</span></article>
+<article class="card"><div class="icon">▶️</div><h3>YouTube Educators</h3><p>Educational video creators can apply with their channel details.</p><span class="status">Applications managed below</span></article>
+<article class="card"><div class="icon">📝</div><h3>Quizzes and Exam Practice</h3><p>Planned practice questions and revision activities for learners.</p><span class="status">Planned feature</span></article>
+<article class="card"><div class="icon">🤖</div><h3>Isaac AI Research Assistant</h3><p>A proposed assistant to help learners research and understand difficult concepts.</p><span class="status">AI integration required</span></article>
+<article class="card"><div class="icon">💳</div><h3>Subscriptions and Earnings</h3><p>Creator subscriptions, lesson payments and platform commissions.</p><span class="status">Payment integration required</span></article>
+</section>
+<section class="panel" aria-labelledby="applications-title">
+<div class="panel-head"><div><h2 id="applications-title">Creator Applications</h2><div class="muted">Review teacher and educational YouTuber applications.</div></div><button id="refresh" class="primary" type="button">↻ Refresh</button></div>
+<div id="app-message" class="notice" role="status" hidden></div>
+<div class="toolbar"><input id="search" type="search" placeholder="Search creator name or type" aria-label="Search creator applications"><select id="status-filter" aria-label="Filter by application status"><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="suspended">Suspended</option></select></div>
+<div id="applications" class="empty">Loading applications…</div>
+<p class="muted">Review buttons call the secure database function. This page does not directly update creator records.</p>
+</section>
+<section class="panel"><h2>Security notes</h2><p class="muted">Creator data is protected by Row Level Security. Creator review and listing use database functions that check the registered founder. Keep your Supabase service-role key private; this page must use only the publishable key in <code>supabase.js</code>.</p><p class="muted">KNOWZA EDU is a separate project from SchoolConnect Zambia. This page uses KNOWZA-specific tables and does not link school records or SCZ learning content.</p></section>
+<section class="founder"><div>Platform Founder</div><strong>M.I.K-BRAINS</strong><p class="muted">Founder and project lead for KNOWZA EDU.</p></section>
+</div>
+</main>
+<footer>KNOWZA EDU · A project founded by M.I.K-BRAINS</footer>
+<script>
+(async function(){
+ const loading=document.getElementById("loading"), message=document.getElementById("message"), content=document.getElementById("content");
+ const listBox=document.getElementById("applications"), appMessage=document.getElementById("app-message");
+ const refreshButton=document.getElementById("refresh"), searchInput=document.getElementById("search"), statusFilter=document.getElementById("status-filter");
+ let client=null, applications=[], busy=false;
+ function showAccessError(text){loading.hidden=true;message.hidden=false;message.textContent=text;}
+ function showAppMessage(text,kind){appMessage.hidden=!text;appMessage.className="notice"+(kind?" "+kind:"");appMessage.textContent=text||"";}
+ function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
+ function pretty(value){return String(value||"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());}
+ function renderApplications(){
+   const q=searchInput.value.trim().toLowerCase(), filter=statusFilter.value;
+   const filtered=applications.filter(app=>[app.display_name,app.creator_type,app.education_level,app.approval_status].some(v=>String(v||"").toLowerCase().includes(q))&&(filter==="all"||app.approval_status===filter));
+   if(!filtered.length){listBox.className="empty";listBox.textContent=applications.length?"No applications match your search or status filter.":"No creator applications yet. New applications will appear here after creators submit them.";return;}
+   listBox.className="table-wrap";
+   listBox.innerHTML=`<table><thead><tr><th>Creator</th><th>Type / Level</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead><tbody>${filtered.map(app=>{
+    const status=String(app.approval_status||"pending").toLowerCase();
+    const actions=status==="pending"?`<button type="button" class="primary" data-id="${escapeHtml(app.id)}" data-decision="approved">Approve</button> <button type="button" class="danger" data-id="${escapeHtml(app.id)}" data-decision="rejected">Reject</button>`:status==="approved"?`<button type="button" class="danger" data-id="${escapeHtml(app.id)}" data-decision="suspended">Suspend</button>`:status==="suspended"?`<button type="button" data-id="${escapeHtml(app.id)}" data-decision="approved">Reapprove</button>`:`<span class="muted">No action</span>`;
+    const channel=app.channel_url?`<div><a href="${escapeHtml(app.channel_url)}" target="_blank" rel="noopener noreferrer">Channel link</a></div>`:"";
+    return `<tr><td><strong>${escapeHtml(app.display_name)}</strong><div class="muted">${escapeHtml(app.user_id)}</div>${channel}</td><td>${escapeHtml(pretty(app.creator_type))}<div class="muted">${escapeHtml(pretty(app.education_level))}</div></td><td><span class="pill ${escapeHtml(status)}">${escapeHtml(pretty(status))}</span></td><td>${app.created_at?escapeHtml(new Date(app.created_at).toLocaleString()):"—"}</td><td><div class="toolbar">${actions}</div></td></tr>`;
+   }).join("")}</tbody></table>`;
+ }
+ async function loadApplications(){
+   if(busy)return;busy=true;refreshButton.disabled=true;listBox.className="empty";listBox.textContent="Loading applications…";showAppMessage("","");
+   try{const {data,error}=await client.rpc("knowza_list_creator_applications");if(error)throw error;applications=Array.isArray(data)?data:[];renderApplications();}
+   catch(error){console.error("Creator applications:",error);applications=[];listBox.className="notice error";listBox.textContent="Could not load creator applications. Check the database function, connection, and browser console.";showAppMessage(error.message||"Application loading failed.","error");}
+   finally{busy=false;refreshButton.disabled=false;}
+ }
+ async function loadApplicationsAfterReview(){const {data,error}=await client.rpc("knowza_list_creator_applications");if(error)throw error;applications=Array.isArray(data)?data:[];renderApplications();}
+ async function reviewApplication(id,decision){
+   if(busy)return;const app=applications.find(item=>item.id===id);if(!app)return;
+   const verb=decision==="approved"?"approve":decision==="rejected"?"reject":"suspend";
+   if(!window.confirm(`Are you sure you want to ${verb} ${app.display_name}?`))return;
+   busy=true;refreshButton.disabled=true;showAppMessage(`Trying to ${verb} ${app.display_name}…`,"");
+   try{const {data,error}=await client.rpc("knowza_review_creator",{p_creator_id:id,p_decision:decision});if(error)throw error;showAppMessage(typeof data==="string"?data:"Application status updated.","success");await loadApplicationsAfterReview();}
+   catch(error){console.error("Creator review:",error);showAppMessage(error.message||"The review action failed.","error");}
+   finally{busy=false;refreshButton.disabled=false;}
+ }
+ document.addEventListener("click",event=>{const button=event.target.closest("button[data-id][data-decision]");if(button&&!content.hidden)reviewApplication(button.dataset.id,button.dataset.decision);});
+ refreshButton.addEventListener("click",loadApplications);searchInput.addEventListener("input",renderApplications);statusFilter.addEventListener("change",renderApplications);
+ try{
+  if(!window.supabaseClient)throw new Error("Supabase did not initialise. Check supabase.js and its file path.");
+  client=window.supabaseClient;
+  const {data:{user},error:authError}=await client.auth.getUser();
+  if(authError||!user){showAccessError("Please sign in with your founder account first.");return;}
+  const {data:founder,error:founderError}=await client.from("platform_admins").select("user_id,full_name,role").eq("user_id",user.id).eq("role","founder").eq("full_name","M.I.K-BRAINS").maybeSingle();
+  if(founderError)throw founderError;
+  if(!founder){showAccessError("Access denied. This page is for the verified founder.");return;}
+  loading.hidden=true;content.hidden=false;await loadApplications();
+ }catch(error){console.error("KNOWZA EDU access check:",error);showAccessError("Unable to verify access. Check your connection and Supabase settings, then try again.");}
+})();
+</script>
+</body>
+  </html>
