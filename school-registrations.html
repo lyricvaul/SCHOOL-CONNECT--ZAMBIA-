@@ -4,182 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>School Registrations | SCZ</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
 </head>
-
 <body class="bg-slate-100 text-slate-800">
-
 <header class="bg-blue-950 text-white p-5">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
-        <p class="mt-1">Founder Portal — School Registrations</p>
-        <p class="text-sm text-blue-200">M.I.K-BRAINS</p>
-    </div>
+<div class="max-w-6xl mx-auto">
+<h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
+<p class="mt-1">Founder Portal — School Registrations</p>
+<p class="text-sm text-blue-200">M.I.K-BRAINS</p>
+</div>
 </header>
 
 <main class="max-w-6xl mx-auto p-5">
+<a href="dashboard-founder.html" class="inline-block mb-5 text-blue-800 underline">← Back to Founder Dashboard</a>
 
-    <a href="dashboard-founder.html"
-       class="inline-block mb-5 text-blue-800 underline">
-        ← Back to Founder Dashboard
-    </a>
+<section class="bg-white rounded-xl border border-slate-200 p-5">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+<div>
+<h2 class="text-xl font-bold">School Registration Requests</h2>
+<p class="text-slate-600 mt-2">Review applications before approving or rejecting them.</p>
+</div>
+<button id="refreshButton" type="button" class="rounded-lg bg-blue-900 text-white px-4 py-2 hover:bg-blue-800">Refresh requests</button>
+</div>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-                <h2 class="text-xl font-bold">School Registration Requests</h2>
-                <p class="text-slate-600 mt-2">
-                    Review applications before approving or rejecting them.
-                </p>
-            </div>
-
-            <button id="refreshButton"
-                    type="button"
-                    class="rounded-lg bg-blue-900 text-white px-4 py-2 hover:bg-blue-800">
-                Refresh requests
-            </button>
-        </div>
-
-        <p id="status"
-           class="mt-5 text-sm whitespace-pre-wrap"
-           aria-live="polite">
-            Verifying founder access...
-        </p>
-
-        <div id="results" class="mt-5 overflow-x-auto"></div>
-
-    </section>
+<p id="status" class="mt-5 text-sm whitespace-pre-wrap" aria-live="polite">Starting Supabase connection check...</p>
+<div id="results" class="mt-5 overflow-x-auto"></div>
+</section>
 </main>
 
-<dialog id="detailsDialog"
-        class="w-11/12 max-w-xl rounded-xl p-0 shadow-xl backdrop:bg-slate-950/50">
-
-    <div class="p-5">
-        <div class="flex items-start justify-between gap-4">
-            <h2 class="text-xl font-bold">Application details</h2>
-
-            <button id="closeDetails"
-                    type="button"
-                    class="text-slate-500 text-2xl leading-none"
-                    aria-label="Close">
-                ×
-            </button>
-        </div>
-
-        <dl id="detailsContent"
-            class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-        </dl>
-
-        <div class="mt-5 flex justify-end">
-            <button id="closeDetailsBottom"
-                    type="button"
-                    class="rounded-lg border px-4 py-2">
-                Close
-            </button>
-        </div>
-    </div>
-</dialog>
-
-<script>
-let client = window.supabaseClient;
-let founderVerified = false;
-
-const statusEl = document.getElementById("status");
-const resultsEl = document.getElementById("results");
-const dialog = document.getElementById("detailsDialog");
-const detailsContent = document.getElementById("detailsContent");
-
-function setStatus(message, error = false) {
-    statusEl.textContent = message;
-
-    statusEl.className =
-        "mt-5 text-sm whitespace-pre-wrap " +
-        (error ? "text-red-700" : "text-slate-600");
-}
-
-function button(label, style, handler) {
-    const b = document.createElement("button");
-
-    b.type = "button";
-    b.textContent = label;
-    b.className = style;
-
-    b.addEventListener("click", handler);
-
-    return b;
-}
-
-function showDetails(r) {
-    detailsContent.replaceChildren();
-
-    const fields = [
-        ["School name", r.school_name],
-        ["Institution type", r.institution_type],
-        ["Province", r.province],
-        ["District", r.district],
-        ["School email", r.school_email],
-        ["Status", r.status],
-        ["SCZ school code", r.school_code],
-        [
-            "Date submitted",
-            r.submitted_at
-                ? new Date(r.submitted_at).toLocaleString()
-                : null
-        ],
-        ["Request ID", r.id]
-    ];
-
-    fields.forEach(([label, value]) => {
-        const box = document.createElement("div");
-
-        box.className =
-            "rounded-lg bg-slate-50 p-3 border border-slate-200";
-
-        const dt = document.createElement("dt");
-        dt.className =
-            "text-xs uppercase tracking-wide text-slate-500";
-        dt.textContent = label;
-
-        const dd = document.createElement("dd");
-        dd.className = "mt-1 break-words font-medium";
-
-        dd.textContent =
-            value == null || value === ""
-                ? "—"
-                : String(value);
-
-        box.append(dt, dd);
-        detailsContent.appendChild(box);
-    });
-
-    if (typeof dialog.showModal === "function") {
-        dialog.showModal();
-    } else {
-        alert(
-            fields
-                .map(([k, v]) => k + ": " + (v || "—"))
-                .join("\n")
-        );
-    }
-}
-
-function closeDialog() {
-    if (dialog.open) {
-        dialog.close();
-    }
-}
-
-async function decide(r, decision) {
-    if (!founderVerified) {
-        setStatus(
-            "Action blocked: founder access has not been verified.",
-            true
-        );
-        return;
-    }
-
-    if (r.status !== "
+<dialog id="detailsDialog" class="w-11/12 max-w-xl rounded-xl p-0 shadow-xl backdrop:bg-slate-950/50">
+<div class="p-5">
+<div class="flex items-start justify-between gap-4">
+<h2 class="text-xl font-bold">Application details</h2>
+<button id="closeDetails" type="button" class="text-slate-500 text-2xl leading-none" aria-label="Close">×</button>
+</div>
+<dl id="detailsContent" class="mt-4 grid grid-cols-1 sm:grid-cols
