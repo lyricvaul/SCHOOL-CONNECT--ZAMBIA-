@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>KNOWZA EDU | Founder Centre</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+
+  <style>
+    :root {
+      --purple: #6b21a8;
+      --purple-dark: #4c1d95;
+      --purple-light: #f3e8ff;
+      --background: #faf8ff;
+      --text: #20152e;
+      --muted: #6b6475;
+      --border: #e9ddf5;
+      --white: #ffffff;
+      --green: #15803d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 16px;
+    }
+
+    .header-inner,
+    main {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .brand {
+      color: var(--purple-dark);
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding: 24px 16px 40px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .founder-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 40px;
+      background: var(--purple-light);
+      color: var(--purple);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .back-button {
+      display: inline-block;
+      background: var(--white);
+      color: var(--purple-dark);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4c1d95, #7e22ce);
+      color: white;
+      border-radius: 22px;
+      padding: 28px 22px;
+      margin-bottom: 20px;
+    }
+
+    .hero .eyebrow {
+      color: #ead7ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 8px 0;
+      font-size: clamp(28px, 7vw, 42px);
+      line-height: 1.15;
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: #f5eaff;
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      margin: 26px 0 12px;
+      font-size: 21px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 19px;
+    }
+
+    .card .icon {
+      font-size: 27px;
+    }
+
+    .card h3 {
+      margin: 8px 0;
+      font-size: 17px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #fff7ed;
+      color: #9a3412;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .info-panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--purple);
+      border-radius: 15px;
+      padding: 18px;
+      margin-top: 20px;
+    }
+
+    .info-panel h3 {
+      margin-top: 0;
+    }
+
+    .info-panel p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .founder-panel {
+      background: var(--purple-light);
+      border-radius: 17px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .founder-panel h3 {
+      margin-top: 0;
+      color: var(--purple-dark);
+    }
+
+    .founder-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--purple-dark);
+    }
+
+    #message {
+      padding: 14px;
+      border-radius: 12px;
+      background: #fff7ed;
+      color: #9a3412;
+      margin-bottom: 16px;
+    }
+
+    #content {
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px 15px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 25px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      cursor: pointer;
+      font: inherit;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">KNOWZA EDU</div>
+    <div class="subtitle">Founder Centre · M.I.K-BRAINS</div>
+  </div>
+</header>
+
+<main>
+  <div id="loading" class="loading">
+    Checking founder access...
+  </div>
+
+  <div id="message" hidden></div>
+
+  <div id="content">
+
+    <div class="topline">
+      <span class="founder-badge">Founder</span>
+
+      <a class="back-button" href="dashboard-founder.html">
+        ← Founder Dashboard
+      </a>
+    </div>
+
+    <section class="hero">
+      <div class="eyebrow">A separate education platform</div>
+
+      <h1>KNOWZA EDU</h1>
+
+      <p>
+        A learning and educational-content platform designed to connect
+        learners with teachers and educational creators across Zambia.
+      </p>
+    </section>
+
+    <h2 class="section-title">Platform Overview</h2>
+
+    <section class="grid">
+
+      <article class="card">
+        <div class="icon">📚</div>
+        <h3>Educational Lessons</h3>
+        <p>
+          A planned library of lessons, notes, PDFs, videos and
+          other learning materials.
+        </p>
+        <span class="status">Planned feature</span>
+      </article>
+
+      <article class="card">
+        <div class="icon">👩‍🏫</div>
+        <h3>Teachers and Lecturers</h3>
+        <p>
+          Educational creators can prepare lessons for primary,
+          secondary, college and university learners.
+        </p>
+        <span class="status">Planned feature</span>
+      </article>
+
+      <article class="card">
+        <div class="icon">▶️</div>
+        <h3>YouTube Educators</h3>
+        <p>
+          A proposed space for educational video creators to share
+          learning content with their audiences.
+        </p>
+        <span class="status">Planned feature</span>
+      </article>
+
+      <article class="card">
+        <div class="icon">📝</div>
+        <h3>Quizzes and Exam Practice</h3>
+        <p>
+          Practice questions and revision activities designed to help
+          learners prepare for examinations.
+        </p>
+        <span class="status">Planned feature</span>
+      </article>
+
+      <article class="card">
+        <div class="icon">🤖</div>
+        <h3>Isaac AI Research Assistant</h3>
+        <p>
+          A proposed AI learning assistant to help learners research
+          topics and understand difficult concepts.
+        </p>
+        <span class="status">Integration required</span>
+      </article>
+
+      <article class="card">
+        <div class="icon">💳</div>
+        <h3>Subscriptions and Earnings</h3>
+        <p>
+          A planned system for creator subscriptions, lesson payments,
+          earnings records and platform commissions.
+        </p>
+        <span class="status">Integration required</span>
+      </article>
+
+    </section>
+
+    <section class="info-panel">
+      <h3>🔐 Keep KNOWZA EDU Separate</h3>
+      <p>
+        KNOWZA EDU is a separate project from SchoolConnect Zambia.
+        This page is an overview inside the founder area; it does not
+        connect the two platforms' accounts, databases, payments or
+        learning content.
+      </p>
+    </section>
+
+    <section class="founder-panel">
+      <h3>Platform Founder</h3>
+
+      <div class="founder-name">M.I.K-BRAINS</div>
+
+      <p>
+        Founder and project lead for KNOWZA EDU.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  KNOWZA EDU · A project founded by M.I.K-BRAINS
+</footer>
+
+<script>
+(async function () {
+  const loading = document.getElementById("loading");
+  const message = document.getElementById("message");
+  const content = document.getElementById("content");
+
+  function denyAccess(text) {
+    loading.style.display = "none";
+    message.hidden = false;
+    message.textContent = text;
+  }
+
+  try {
+    if (!window.supabaseClient) {
+      throw new Error(
+        "Supabase did not initialise. Check supabase.js and its file path."
+      );
+    }
+
+    const client = window.supabaseClient;
+
+    const {
+      data: { user },
+      error: authError
+    } = await client.auth.getUser();
+
+    if (authError || !user) {
+      denyAccess("Please sign in with your founder account first.");
+      return;
+    }
+
+    const { data: founder, error: founderError } = await client
+      .from("platform_admins")
+      .select("user_id, full_name, role")
+      .eq("user_id", user.id)
+      .eq("role", "founder")
+      .eq("full_name", "M.I.K-BRAINS")
+      .maybeSingle();
+
+    if (founderError) {
+      throw founderError;
+    }
+
+    if (!founder) {
+      denyAccess("Access denied. This page is for the verified founder.");
+      return;
+    }
+
+    loading.style.display = "none";
+    content.style.display = "block";
+
+  } catch (error) {
+    console.error("KNOWZA EDU access check:", error);
+    denyAccess(
+      "Unable to verify access. Check your connection and Supabase settings, then try again."
+    );
+  }
+})();
+</script>
+
+</body>
+</html>
