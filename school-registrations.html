@@ -4,40 +4,479 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>School Registrations | SCZ</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; }
+dialog::backdrop { background: rgba(15, 23, 42, .6); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+</style>
 </head>
+
 <body class="bg-slate-100 text-slate-800">
+
 <header class="bg-blue-950 text-white p-5">
-<div class="max-w-6xl mx-auto">
-<h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
-<p class="mt-1">Founder Portal — School Registrations</p>
-<p class="text-sm text-blue-200">M.I.K-BRAINS</p>
-</div>
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
+    <p class="mt-1">Founder Portal — School Registrations</p>
+    <p class="text-sm text-blue-200">M.I.K-BRAINS</p>
+  </div>
 </header>
 
 <main class="max-w-6xl mx-auto p-5">
-<a href="dashboard-founder.html" class="inline-block mb-5 text-blue-800 underline">← Back to Founder Dashboard</a>
 
-<section class="bg-white rounded-xl border border-slate-200 p-5">
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-<div>
-<h2 class="text-xl font-bold">School Registration Requests</h2>
-<p class="text-slate-600 mt-2">Review applications before approving or rejecting them.</p>
-</div>
-<button id="refreshButton" type="button" class="rounded-lg bg-blue-900 text-white px-4 py-2 hover:bg-blue-800">Refresh requests</button>
-</div>
+  <a href="dashboard-founder.html"
+     class="inline-block mb-5 text-blue-800 underline">
+    ← Back to Founder Dashboard
+  </a>
 
-<p id="status" class="mt-5 text-sm whitespace-pre-wrap" aria-live="polite">Starting Supabase connection check...</p>
-<div id="results" class="mt-5 overflow-x-auto"></div>
-</section>
+  <section class="bg-white rounded-xl border border-slate-200 p-5">
+
+    <div class="flex flex-col sm:flex-row sm:items-center
+                sm:justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-bold">School Registration Requests</h2>
+        <p class="text-slate-600 mt-2">
+          Review applications before approving or rejecting them.
+        </p>
+      </div>
+
+      <button id="refreshButton"
+        type="button"
+        class="rounded-lg bg-blue-900 text-white px-4 py-2">
+        Refresh requests
+      </button>
+    </div>
+
+    <p id="status"
+       class="mt-5 text-sm whitespace-pre-wrap"
+       aria-live="polite">
+      Starting Supabase connection check...
+    </p>
+
+    <div id="results" class="mt-5 overflow-x-auto"></div>
+
+  </section>
 </main>
 
-<dialog id="detailsDialog" class="w-11/12 max-w-xl rounded-xl p-0 shadow-xl backdrop:bg-slate-950/50">
-<div class="p-5">
-<div class="flex items-start justify-between gap-4">
-<h2 class="text-xl font-bold">Application details</h2>
-<button id="closeDetails" type="button" class="text-slate-500 text-2xl leading-none" aria-label="Close">×</button>
-</div>
-<dl id="detailsContent" class="mt-4 grid grid-cols-1 sm:grid-cols
+<dialog id="detailsDialog"
+  class="w-11/12 max-w-xl rounded-xl p-0 shadow-xl">
+
+  <div class="p-5">
+    <div class="flex items-start justify-between gap-4">
+      <h2 class="text-xl font-bold">Application details</h2>
+
+      <button id="closeDetails"
+        type="button"
+        class="text-slate-500 text-2xl"
+        aria-label="Close">×</button>
+    </div>
+
+    <dl id="detailsContent"
+        class="mt-4 grid grid-cols-1 gap-3"></dl>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  "use strict";
+
+  const statusEl = document.getElementById("status");
+  const resultsEl = document.getElementById("results");
+  const refreshButton = document.getElementById("refreshButton");
+  const detailsDialog = document.getElementById("detailsDialog");
+  const detailsContent = document.getElementById("detailsContent");
+
+  let client = null;
+  let founderVerified = false;
+  let busy = false;
+
+  function showStatus(message, error = false) {
+    statusEl.textContent = message;
+    statusEl.className =
+      "mt-5 text-sm whitespace-pre-wrap " +
+      (error ? "text-red-700" : "text-slate-700");
+  }
+
+  function withTimeout(promise, label, milliseconds = 12000) {
+    let timer;
+
+    const timeout = new Promise((_, reject) => {
+      timer = setTimeout(() => {
+        reject(new Error(label + " timed out after " +
+          (milliseconds / 1000) + " seconds."));
+      }, milliseconds);
+    });
+
+    return Promise.race([promise, timeout])
+      .finally(() => clearTimeout(timer));
+  }
+
+  function friendlyError(error) {
+    if (!error) return "Unknown error.";
+
+    return error.message ||
+      error.details ||
+      error.hint ||
+      String(error);
+  }
+
+  function makeCell(text) {
+    const td = document.createElement("td");
+    td.className = "border-b p-3 text-sm";
+    td.textContent = text == null || text === ""
+      ? "—"
+      : String(text);
+    return td;
+  }
+
+  function makeButton(label, className, action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.className =
+      "rounded-lg px-3 py-2 text-white text-sm " + className;
+    button.addEventListener("click", action);
+    return button;
+  }
+
+  function showDetails(request) {
+    detailsContent.replaceChildren();
+
+    const fields = [
+      ["School name", request.school_name],
+      ["Institution type", request.institution_type],
+      ["Province", request.province],
+      ["District", request.district],
+      ["School email", request.school_email],
+      ["Status", request.status],
+      ["School code", request.school_code],
+      ["Submitted", request.submitted_at
+        ? new Date(request.submitted_at).toLocaleString()
+        : "—"],
+      ["Application ID", request.id]
+    ];
+
+    fields.forEach(([label, value]) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "border-b border-slate-200 pb-2";
+
+      const term = document.createElement("dt");
+      term.className = "font-semibold text-slate-600";
+      term.textContent = label;
+
+      const description = document.createElement("dd");
+      description.className = "mt-1 break-words";
+      description.textContent = value == null || value === ""
+        ? "—"
+        : String(value);
+
+      wrapper.append(term, description);
+      detailsContent.appendChild(wrapper);
+    });
+
+    detailsDialog.showModal();
+  }
+
+  async function verifyFounder() {
+    showStatus("Step 1/3: Checking Supabase library...");
+
+    if (!window.supabase) {
+      throw new Error(
+        "The Supabase library did not load. Check your internet " +
+        "connection and the Supabase CDN script."
+      );
+    }
+
+    if (!window.supabaseClient) {
+      throw new Error(
+        "supabase.js did not create window.supabaseClient. " +
+        "Check that supabase.js loads correctly."
+      );
+    }
+
+    client = window.supabaseClient;
+
+    showStatus("Step 2/3: Checking your login session...");
+
+    const sessionResult = await withTimeout(
+      client.auth.getSession(),
+      "Supabase login check"
+    );
+
+    if (sessionResult.error) {
+      throw sessionResult.error;
+    }
+
+    const session = sessionResult.data.session;
+
+    if (!session) {
+      showStatus("You are not logged in. Opening the login page...");
+      window.location.href = "login.html";
+      return false;
+    }
+
+    showStatus("Step 3/3: Verifying founder permissions...");
+
+    const result = await withTimeout(
+      client
+        .from("platform_admins")
+        .select("user_id, full_name, role")
+        .eq("user_id", session.user.id)
+        .maybeSingle(),
+      "Founder permission check"
+    );
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    const founder = result.data;
+
+    if (
+      !founder ||
+      founder.role !== "founder" ||
+      founder.full_name !== "M.I.K-BRAINS"
+    ) {
+      throw new Error(
+        "Founder access denied. The logged-in account does not " +
+        "match the registered founder record. Check platform_admins."
+      );
+    }
+
+    founderVerified = true;
+    return true;
+  }
+
+  async function loadRequests() {
+    if (!founderVerified) {
+      showStatus("Founder verification is required.", true);
+      return;
+    }
+
+    if (busy) return;
+    busy = true;
+    refreshButton.disabled = true;
+    resultsEl.replaceChildren();
+
+    try {
+      showStatus("Loading school registration applications...");
+
+      const response = await withTimeout(
+        client
+          .from("school_registration_requests")
+          .select(
+            "id, school_name, institution_type, province, district, " +
+            "school_email, status, submitted_at, school_code"
+          )
+          .order("submitted_at", { ascending: false }),
+        "School application query"
+      );
+
+      if (response.error) throw response.error;
+
+      const requests = response.data || [];
+
+      if (requests.length === 0) {
+        showStatus(
+          "Connection successful. No school registration " +
+          "applications were found."
+        );
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.className =
+        "min-w-full bg-white border border-slate-200";
+
+      const thead = document.createElement("thead");
+      thead.className = "bg-slate-100";
+
+      const headerRow = document.createElement("tr");
+
+      [
+        "School",
+        "Institution type",
+        "District",
+        "Status",
+        "School code",
+        "Actions"
+      ].forEach(label => {
+        const th = document.createElement("th");
+        th.className =
+          "text-left p-3 text-sm font-semibold border-b";
+        th.textContent = label;
+        headerRow.appendChild(th);
+      });
+
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      requests.forEach(request => {
+        const row = document.createElement("tr");
+
+        row.appendChild(makeCell(request.school_name));
+        row.appendChild(makeCell(request.institution_type));
+        row.appendChild(makeCell(request.district));
+        row.appendChild(makeCell(request.status));
+        row.appendChild(makeCell(request.school_code));
+
+        const actions = document.createElement("td");
+        actions.className =
+          "border-b p-3 whitespace-nowrap space-x-1";
+
+        actions.appendChild(
+          makeButton("View details", "bg-slate-700",
+            () => showDetails(request))
+        );
+
+        if (request.status === "pending") {
+          actions.appendChild(
+            makeButton("Approve", "bg-green-700",
+              () => decide(request, "approve"))
+          );
+
+          actions.appendChild(
+            makeButton("Reject", "bg-red-700",
+              () => decide(request, "reject"))
+          );
+        }
+
+        row.appendChild(actions);
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(tbody);
+      resultsEl.appendChild(table);
+
+      showStatus(
+        "Connected successfully. Found " + requests.length +
+        " application(s)."
+      );
+
+    } catch (error) {
+      showStatus(
+        "Could not load school applications.\n\n" +
+        friendlyError(error),
+        true
+      );
+    } finally {
+      busy = false;
+      refreshButton.disabled = false;
+    }
+  }
+
+  async function decide(request, decision) {
+    if (!founderVerified) {
+      showStatus("Founder verification is required.", true);
+      return;
+    }
+
+    if (busy) return;
+
+    const actionName = decision === "approve"
+      ? "approve this school application"
+      : "reject this school application";
+
+    if (!window.confirm(
+      "Are you sure you want to " + actionName + "?\n\n" +
+      "School: " + request.school_name
+    )) {
+      return;
+    }
+
+    busy = true;
+    refreshButton.disabled = true;
+
+    try {
+      showStatus(
+        decision === "approve"
+          ? "Approving application and generating its SCZ code..."
+          : "Rejecting application..."
+      );
+
+      const result = await withTimeout(
+        client.rpc("process_school_registration", {
+          p_request_id: request.id,
+          p_decision: decision
+        }),
+        "School registration processing"
+      );
+
+      if (result.error) throw result.error;
+
+      const data = result.data;
+
+      if (data && data.success === false) {
+        throw new Error(data.message || "The request was not processed.");
+      }
+
+      if (decision === "approve") {
+        const code = data && (
+          data.school_code ||
+          data.code
+        );
+
+        showStatus(
+          "Application approved successfully." +
+          (code ? "\nGenerated school code: " + code : "") +
+          "\nRefreshing applications..."
+        );
+      } else {
+        showStatus(
+          "Application rejected successfully. Refreshing applications..."
+        );
+      }
+
+    } catch (error) {
+      showStatus(
+        "The application could not be processed.\n\n" +
+        friendlyError(error),
+        true
+      );
+    } finally {
+      busy = false;
+      refreshButton.disabled = false;
+    }
+
+    await loadRequests();
+  }
+
+  refreshButton.addEventListener("click", loadRequests);
+
+  document.getElementById("closeDetails")
+    .addEventListener("click", () => detailsDialog.close());
+
+  detailsDialog.addEventListener("click", event => {
+    if (event.target === detailsDialog) {
+      detailsDialog.close();
+    }
+  });
+
+  async function start() {
+    try {
+      const verified = await verifyFounder();
+
+      if (verified) {
+        await loadRequests();
+      }
+    } catch (error) {
+      founderVerified = false;
+      showStatus(
+        "Setup check failed:\n\n" + friendlyError(error),
+        true
+      );
+    }
+  }
+
+  start();
+})();
+</script>
+
+</body>
+  </html>
