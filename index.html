@@ -1,150 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolConnect Zambia & KNOWZA EDU</title>
-    <meta name="description" content="One education ecosystem for school management and learning resources across Zambia.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .blue-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .nav-link:hover { color: #3b82f6; transition: 0.3s; }
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SchoolConnect Zambia & KNOWZA EDU</title>
+<meta name="description" content="One connected education ecosystem for Zambia: school management, learning resources and educational creators.">
+<style>
+:root{--navy:#061a3b;--navy2:#0b2d5b;--gold:#f5bd45;--gold2:#ffe09a;--silver:#d9e0e8;--grey:#eef1f5;--ink:#0a1d3c;--muted:#5b6677;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f5f7}a{color:inherit;text-decoration:none}button,a{touch-action:manipulation}.wrap{width:min(1200px,92%);margin:auto}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(4,22,51,.97);border-bottom:1px solid rgba(245,189,69,.55);color:white;backdrop-filter:blur(10px)}
+.nav{display:flex;align-items:center;justify-content:space-between;min-height:84px;gap:20px}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand img{width:76px;height:70px;object-fit:contain}.brand-title{font-family:Georgia,serif;font-weight:700;font-size:clamp(16px,2vw,24px);line-height:1.1}.brand-sub{color:var(--gold2);font-size:11px;letter-spacing:.12em;margin-top:5px}.navlinks{display:flex;align-items:center;gap:24px;font-size:13px;font-weight:650}.navlinks a:hover{color:var(--gold)}.navlinks .login{border:1px solid var(--silver);padding:10px 19px;border-radius:12px}.navlinks .register,.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#10213d;padding:12px 20px;border-radius:12px;font-weight:800;border:0;display:inline-flex;justify-content:center;align-items:center;gap:9px}.mobile-toggle{display:none;background:transparent;color:white;border:1px solid #73839b;border-radius:10px;padding:10px 13px;font-size:20px}
+.hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 73% 50%,#234a74 0%,#0a2448 43%,#041630 75%);color:#fff;min-height:430px;border-bottom:4px solid var(--gold)}.hero-grid{display:grid;grid-template-columns: .92fr 1.08fr;align-items:center;gap:5px;min-height:430px}.hero-copy{padding:52px 0;position:relative;z-index:2}.eyebrow{color:var(--gold2);font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:12px}.hero h1{font:700 clamp(38px,5vw,65px)/.98 Georgia,serif;margin:15px 0 18px;letter-spacing:-.03em}.hero h1 span{color:var(--gold)}.hero-lead{font-size:17px;line-height:1.65;max-width:510px;color:#e4eaf3}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:25px}.btn-outline{display:inline-flex;align-items:center;justify-content:center;padding:12px 19px;border:1px solid var(--gold2);border-radius:12px;font-weight:750}.hero-art{position:relative;align-self:stretch;min-height:420px;display:flex;align-items:center;justify-content:center}.hero-art img{width:100%;height:100%;max-height:430px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 15px 30px #0005)}.gold-line{height:3px;background:linear-gradient(90deg,transparent,var(--gold),#fff4cc,var(--gold),transparent)}
+.particle{position:absolute;z-index:1;pointer-events:none;opacity:.72;filter:drop-shadow(0 3px 4px #0006);animation:float 7s ease-in-out infinite;font-size:clamp(17px,2vw,27px)}.p1{left:42%;top:12%;animation-delay:-1s}.p2{left:51%;top:72%;animation-delay:-3s}.p3{right:4%;top:16%;animation-delay:-2s}.p4{left:5%;bottom:12%;animation-delay:-4s}.p5{right:39%;top:7%;animation-delay:-5s}.p6{right:3%;bottom:8%;animation-delay:-.5s}.p7{left:34%;bottom:9%;animation-delay:-2.5s}@keyframes float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-15px) rotate(8deg)}}
+.section{padding:44px 0}.platforms{margin-top:-2px;background:linear-gradient(180deg,#e5e9ef,#fff 25%,#eef0f4)}.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.platform{position:relative;overflow:hidden;border-radius:20px;min-height:285px;color:#fff;padding:27px;background:linear-gradient(115deg,#08234b,#0b3260 65%,#122949);box-shadow:0 12px 24px #061a3b22;border:1px solid #c8d1df}.platform.kze{background:linear-gradient(115deg,#071b3c,#0b2a54 60%,#293c56)}.platform:after{content:"";position:absolute;right:-60px;bottom:-85px;width:230px;height:230px;border:1px solid #f5bd4566;border-radius:50%;box-shadow:0 0 0 20px #f5bd4510,0 0 0 42px #f5bd450a}.platform-head{display:flex;align-items:center;gap:15px;position:relative;z-index:1}.platform-symbol{width:70px;height:70px;display:grid;place-items:center;border-radius:50%;background:#06152e;border:2px solid var(--gold);color:var(--gold);font-size:32px;flex-shrink:0}.platform h2{font:700 29px/1.05 Georgia,serif;margin:0 0 6px}.tagline{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2)}.platform-body{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px;position:relative;z-index:1}.platform p{font-size:13px;line-height:1.6;color:#e4eaf3;margin:0 0 18px}.checks{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:12px}.checks li:before{content:"✓";display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:900;margin-right:7px}.platform .btn-gold{padding:10px 17px;font-size:12px}
+.section-heading{text-align:center;margin-bottom:23px}.section-heading h2{font:700 32px Georgia,serif;margin:0 0 8px;color:var(--navy)}.section-heading p{margin:0;color:var(--muted);font-size:14px}.dash-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.dash-card{background:linear-gradient(145deg,#fff,#e7eaf0);border:1px solid #d4d9e1;border-radius:15px;padding:18px 12px 14px;text-align:center;box-shadow:0 5px 12px #061a3b0a;transition:transform .2s,border-color .2s}.dash-card:hover{transform:translateY(-4px);border-color:var(--gold)}.dash-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#0a2c5a,#06152e);color:var(--gold);font-size:25px;margin:0 auto 12px;border:2px solid #d7dde5}.dash-card:nth-child(3) .dash-icon{background:linear-gradient(145deg,#c69a3b,#73501b);color:#fff}.dash-card h3{font-size:13px;margin:0 0 8px}.dash-card p{font-size:11px;line-height:1.45;color:#5a6677;margin:0 0 12px}.dash-card .level{font-size:10px;font-weight:800;border-top:1px solid #d6dce4;padding-top:10px;color:#18365c}
+.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}.promo{border-radius:18px;padding:22px 25px;display:flex;align-items:center;gap:17px;min-height:135px;color:white;background:linear-gradient(110deg,#9c762c,#f0c55b 45%,#5b421a)}.promo.silver{color:var(--navy);background:linear-gradient(110deg,#b6c0cc,#f2f4f7 55%,#8794a4)}.promo .promo-icon{font-size:34px;width:64px;height:64px;display:grid;place-items:center;border-radius:50%;border:1px solid currentColor;flex-shrink:0}.promo h3{font:700 21px Georgia,serif;margin:0 0 6px}.promo p{font-size:12px;line-height:1.5;margin:0 0 12px}.promo .btn-gold{font-size:11px;padding:9px 15px}
+.stats{background:var(--navy);color:#fff;padding:22px 0;border-top:3px solid var(--gold);border-bottom:3px solid var(--gold)}.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.stat{text-align:center;border-right:1px solid #71809666;padding:4px 8px}.stat:last-child{border:0}.stat strong{display:block;color:var(--gold);font:700 25px Georgia,serif}.stat span{font-size:11px;color:#dce3ed}
+.closing{background:linear-gradient(90deg,#071a38,#24496c 60%,#071a38);color:white;padding:35px 0;position:relative;overflow:hidden}.closing-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}.closing h2{font:700 30px/1.1 Georgia,serif;margin:0 0 8px}.closing p{margin:0;color:#dfe7f1;font-size:13px}.closing-note{font:italic 22px Georgia,serif;color:var(--gold2);transform:rotate(-5deg);text-align:center}
+footer{background:#04142e;color:#dce4ef;border-top:1px solid #b28a37;padding:25px 0}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:20px}.footer-brand{display:flex;align-items:center;gap:10px}.footer-brand img{width:56px;height:54px;object-fit:contain}.footer-links{display:flex;flex-wrap:wrap;gap:17px;font-size:12px}.copyright{font-size:10px;color:#9aa8bc;margin-top:14px;text-align:right}
+@media(max-width:900px){.navlinks{gap:12px}.hero-grid{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:repeat(3,1fr)}.platform-body{grid-template-columns:1fr}.platform{min-height:unset}.checks{grid-template-columns:1fr 1fr}.hero-art{min-height:350px}.hero-art img{object-fit:cover;object-position:center}.brand img{width:62px}}
+@media(max-width:680px){.nav{min-height:72px}.brand img{width:54px;height:54px}.brand-title{font-size:15px}.brand-sub{font-size:9px}.mobile-toggle{display:block}.navlinks{display:none;position:absolute;left:4%;right:4%;top:72px;background:#071a38;border:1px solid #7c8aa0;border-radius:14px;padding:16px;flex-direction:column;align-items:stretch;gap:14px}.navlinks.open{display:flex}.navlinks a{padding:8px}.hero-grid{grid-template-columns:1fr;min-height:unset}.hero-copy{padding:38px 0 5px}.hero h1{font-size:42px;max-width:520px}.hero-lead{font-size:15px}.hero-art{min-height:270px;height:270px;margin-top:-8px}.hero-art img{object-fit:contain;object-position:center bottom}.p1{left:8%;top:45%}.p2{left:68%;top:38%}.p5{right:18%;top:52%}.platform-grid,.promo-grid{grid-template-columns:1fr}.platform{padding:22px}.platform h2{font-size:25px}.platform-body{grid-template-columns:1fr}.checks{grid-template-columns:1fr 1fr}.section{padding:34px 0}.section-heading h2{font-size:27px}.dash-grid{grid-template-columns:repeat(2,1fr);gap:9px}.dash-card{padding:15px 9px 12px}.promo{padding:18px}.stats-grid{grid-template-columns:repeat(2,1fr)}.stat{border-right:0;border-bottom:1px solid #71809666;padding:12px 4px}.stat:last-child{grid-column:span 2}.closing-inner{align-items:flex-start;flex-direction:column}.closing h2{font-size:26px}.closing-note{align-self:center}.footer-row{align-items:flex-start;flex-direction:column}.copyright{text-align:left}.particle{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-    <nav class="bg-white border-b sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center space-x-2" aria-label="Home">
-                    <div class="w-10 h-10 blue-gradient rounded-lg flex items-center justify-center text-white font-bold">SC</div>
-                    <span class="text-xl font-bold text-blue-900">SchoolConnect Zambia</span>
-                </a>
-                <div class="hidden md:flex items-center space-x-6 font-medium">
-                    <a href="index.html" class="text-blue-600">Home</a>
-                    <a href="about.html" class="nav-link">About</a>
-                    <a href="registration.html" class="nav-link">Register Institution</a>
-                    <a href="knowza-edu.html" class="nav-link">KNOWZA EDU</a>
-                    <a href="login.html" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Login</a>
-                </div>
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded border" aria-expanded="false" aria-controls="mobile-menu">☰ <span class="sr-only">Open menu</span></button>
-            </div>
-            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-3 font-medium">
-                <a class="block py-1" href="index.html">Home</a>
-                <a class="block py-1" href="about.html">About</a>
-                <a class="block py-1" href="registration.html">Register Institution</a>
-                <a class="block py-1" href="knowza-edu.html">KNOWZA EDU</a>
-                <a class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md" href="login.html">Login</a>
-            </div>
-        </div>
-    </nav>
-
-    <header class="relative py-20 blue-gradient text-white overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="md:w-2/3">
-                <p class="uppercase tracking-widest text-sm font-bold mb-3">One connected education ecosystem</p>
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Transforming Education Across Zambia</h1>
-                <p class="text-xl mb-8 opacity-90">School management and learning resources for primary schools, secondary schools, colleges and universities.</p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="registration.html" class="bg-white text-blue-900 font-bold px-8 py-3 rounded-lg hover:bg-slate-100 transition">Register Institution</a>
-                    <a href="#platforms" class="border border-white text-white font-bold px-8 py-3 rounded-lg hover:bg-white hover:text-blue-900 transition">Explore Platforms</a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section id="platforms" class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-slate-900">Two connected services</h2>
-                <p class="text-slate-600 mt-2">Choose the area you want to access. Some features are still being developed and tested.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <article class="p-8 border border-blue-100 rounded-2xl card-shadow">
-                    <div class="w-14 h-14 blue-gradient rounded-xl flex items-center justify-center text-white text-xl font-extrabold mb-5">SCZ</div>
-                    <h3 class="text-2xl font-bold text-blue-900 mb-3">SchoolConnect Zambia</h3>
-                    <p class="text-slate-600 mb-5">The school-management area for institutions, administrators, teachers, learners and parents or guardians.</p>
-                    <ul class="list-disc pl-5 space-y-2 text-slate-700 mb-7">
-                        <li>Institution registration and account access</li>
-                        <li>Attendance, timetables and announcements</li>
-                        <li>Results and parent/guardian access</li>
-                        <li>Staff and learner dashboards</li>
-                    </ul>
-                    <div class="text-sm text-amber-700 bg-amber-50 rounded-lg p-3 mb-5">Development note: some SCZ screens are demos. Database connections, role permissions and real workflows must be tested before use with real school records.</div>
-                    <a href="login.html" class="inline-block bg-blue-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-700">Open SCZ Login</a>
-                    <a href="registration.html" class="inline-block mt-2 sm:mt-0 sm:ml-2 border border-blue-600 text-blue-700 font-bold px-6 py-3 rounded-lg hover:bg-blue-50">Register Institution</a>
-                </article>
-                <article class="p-8 border border-indigo-100 rounded-2xl card-shadow">
-                    <div class="w-14 h-14 bg-indigo-700 rounded-xl flex items-center justify-center text-white text-xl font-extrabold mb-5">KZE</div>
-                    <h3 class="text-2xl font-bold text-indigo-900 mb-3">KNOWZA EDU</h3>
-                    <p class="text-slate-600 mb-5">The learning-content area for educators and learners, planned to work alongside SCZ.</p>
-                    <ul class="list-disc pl-5 space-y-2 text-slate-700 mb-7">
-                        <li>Teacher and educational YouTuber applications</li>
-                        <li>Lessons, notes, PDFs and educational videos</li>
-                        <li>Quizzes and examination practice</li>
-                        <li>Isaac AI Research Assistant</li>
-                        <li>Creator subscriptions and earnings</li>
-                    </ul>
-                    <div class="text-sm text-amber-700 bg-amber-50 rounded-lg p-3 mb-5">Development note: creator review tools are present on the page, but applications, lessons, AI and payments need end-to-end testing or integration.</div>
-                    <a href="knowza-edu.html" class="inline-block bg-indigo-700 text-white font-bold px-6 py-3 rounded-lg hover:bg-indigo-800">Open KNOWZA EDU</a>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-slate-900">SCZ dashboard shortcuts</h2>
-                <p class="text-slate-600 mt-2">These links open the existing dashboard pages. Access controls must be enforced by the authentication and database policies, not by hiding links alone.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="dashboard-creator.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">App Creator</h3><p class="text-sm text-slate-500 mt-2">Global system administration and institution management.</p></a>
-                <a href="dashboard-headteacher.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">Head Teacher / Admin</h3><p class="text-sm text-slate-500 mt-2">Manage school operations, staff and settings.</p></a>
-                <a href="dashboard-deputy.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">Deputy Head</h3><p class="text-sm text-slate-500 mt-2">Results approval and daily operations.</p></a>
-                <a href="dashboard-teacher.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">Teacher / Lecturer</h3><p class="text-sm text-slate-500 mt-2">Lesson planning, content and grading.</p></a>
-                <a href="dashboard-student.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">Student</h3><p class="text-sm text-slate-500 mt-2">Lessons, results and progress.</p></a>
-                <a href="dashboard-parent.html" class="block p-6 bg-white border rounded-xl hover:border-blue-500 hover:shadow-lg transition"><h3 class="text-lg font-bold">Parent / Guardian</h3><p class="text-sm text-slate-500 mt-2">Monitor linked children's attendance and reports.</p></a>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-14 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8">
-            <div class="p-7 rounded-2xl border">
-                <h2 class="text-xl font-bold mb-3">Results-checking fees (planned)</h2>
-                <p class="text-slate-600 mb-4">The existing proposal lists these amounts; they are not payment functionality until a payment provider and verification flow are implemented.</p>
-                <div class="space-y-3">
-                    <div class="flex justify-between border-b pb-2"><span>Primary School</span><strong>K5 / term</strong></div>
-                    <div class="flex justify-between border-b pb-2"><span>Secondary School</span><strong>K5 / term</strong></div>
-                    <div class="flex justify-between border-b pb-2"><span>College</span><strong>K20 / term</strong></div>
-                    <div class="flex justify-between"><span>University</span><strong>K15 / term</strong></div>
-                </div>
-            </div>
-            <div class="p-7 rounded-2xl bg-blue-900 text-white">
-                <h2 class="text-xl font-bold mb-3">Educator creator plan (planned)</h2>
-                <p class="text-blue-100 mb-4">The existing proposal lists K150 per month or K1,800 per year. Subscription payments and creator payouts still need integration and testing.</p>
-                <a href="teacher-subscriptions.html" class="inline-block bg-white text-blue-900 font-bold px-6 py-3 rounded-lg hover:bg-blue-50">View Creator Plan</a>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-white border-t py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between gap-4">
-            <div><p class="font-bold text-blue-900">SchoolConnect Zambia · KNOWZA EDU</p><p class="text-sm text-slate-500 mt-1">A connected education ecosystem founded by M.I.K-BRAINS.</p></div>
-            <div class="flex flex-wrap gap-4 text-sm"><a href="about.html" class="hover:text-blue-600">About</a><a href="contact.html" class="hover:text-blue-600">Contact</a><a href="registration.html" class="hover:text-blue-600">Register Institution</a><a href="knowza-edu.html" class="hover:text-blue-600">KNOWZA EDU</a></div>
-            <p class="text-sm text-slate-400">&copy; 2026 SchoolConnect Zambia & KNOWZA EDU.</p>
-        </div>
-    </footer>
-    <script>
-        const menuButton = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        menuButton.addEventListener('click', () => {
-            const opening = mobileMenu.classList.contains('hidden');
-            mobileMenu.classList.toggle('hidden');
-            menuButton.setAttribute('aria-expanded', String(opening));
-        });
-    </script>
-</body>
-    </html>
-                    
+<body>
+<div class="topbar"><div class="wrap nav">
+<a href="index.html" class="brand"><img src="assets/scz-kze-logo.png" alt="SCZ and KNOWZA EDU logo"><div><div class="brand-title">SchoolConnect Zambia</div><div class="brand-sub">— & KNOWZA EDU —<br>One Platform • Endless Opportunities</div></div></a>
+<button class="mobile-toggle" id="mobile-menu-btn" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation">☰</button>
+<nav class="navlinks" id="main-nav"><a href="index.html">Home</a><a href="about.html">About</a><a href="#platforms">Features</a><a href="#pricing">Pricing</a><a href="contact.html">Contact</a><a class="login" href="login.html">Login</a><a class="register" href="registration.html">Register</a></nav>
+</div></div>
+<header class="hero">
+<div class="wrap hero-grid"><div class="hero-copy"><div class="eyebrow">One connected education ecosystem</div><h1>Welcome to the<br>Integrated Education <span>Ecosystem</span></h1><p class="hero-lead"><strong>SchoolConnect Zambia (SCZ) & KNOWZA EDU (KZE)</strong><br>One platform. Two powerful solutions. Connecting schools, learners, educators and creators for a brighter future in Zambia.</p><div class="hero-actions"><a class="btn-gold" href="#platforms">Explore Our Platforms&nbsp; →</a><a class="btn-outline" href="#features">▷&nbsp; Explore Features</a></div></div><div class="hero-art"><img src="assets/hero-characters.png" alt="Anime-style student ambassadors representing SchoolConnect Zambia and KNOWZA EDU"></div></div>
+<span class="particle p1">📖</span><span class="particle p2">✏️</span><span class="particle p3">📐</span><span class="particle p4">🖊️</span><span class="particle p5">🎓</span><span class="particle p6">📚</span><span class="particle p7">✒️</span>
+</header><div class="gold-line"></div>
+<main>
+<section class="section platforms" id="platforms"><div class="wrap"><div class="platform-grid">
+<article class="platform"><div class="platform-head"><div class="platform-symbol">🏫</div><div><h2>SCZ</h2><div class="tagline">SchoolConnect Zambia · Manage • Track • Empower</div></div></div><div class="platform-body"><div><p>A complete school management system for primary and secondary schools, colleges and universities. Connect administrators, teachers, parents and students on one platform.</p><a class="btn-gold" href="login.html">Explore SCZ&nbsp; →</a></div><ul class="checks"><li>Student registration & management</li><li>Attendance & timetables</li><li>Examination results</li><li>Parent communication</li><li>Staff & administrator tools</li><li>School announcements</li></ul></div></article>
+<article class="platform kze"><div class="platform-head"><div class="platform-symbol">📚</div><div><h2>KZE</h2><div class="tagline">KNOWZA EDU · Learn • Create • Earn</div></div></div><div class="platform-body"><div><p>Access educational content, share knowledge and learn from educators. Lessons, revision activities and creator tools belong in this learning space.</p><a class="btn-gold" href="knowza-edu.html">Explore KZE&nbsp; →</a></div><ul class="checks"><li>Educational lessons & notes</li><li>Video content & PDFs</li><li>Teacher & YouTube applications</li><li>Quizzes & exam practice</li><li>Isaac AI Research Assistant</li><li>Creator subscriptions & earnings</li></ul></div></article>
+</div></div></section>
+<section class="section" id="features"><div class="wrap"><div class="section-heading"><h2>Access Your Dashboard</h2><p>Choose your role to get started. Some screens still require full integration and testing.</p></div>
+<div class="dash-grid">
+<a class="dash-card" href="dashboard-creator.html"><div class="dash-icon">⚙</div><h3>App Creator</h3><p>Global system administration and institution management.</p><div class="level">System Level　→</div></a>
+<a class="dash-card" href="dashboard-headteacher.html"><div class="dash-icon">♟</div><h3>Head Teacher / Admin</h3><p>Manage school operations, staff and institutional settings.</p><div class="level">School Level　→</div></a>
+<a class="dash-card" href="dashboard-teacher.html"><div class="dash-icon">▤</div><h3>Teacher / Lecturer</h3><p>Lesson planning, content creation and grading.</p><div class="level">Educator Level　→</div></a>
+<a class="dash-card" href="dashboard-student.html"><div class="dash-icon">🎓</div><h3>Student</h3><p>View lessons, check results and track progress.</p><div class="level">Learner Level　→</div></a>
+<a class="dash-card" href="dashboard-parent.html"><div class="dash-icon">♧</div><h3>Parent / Guardian</h3><p>Monitor children's attendance and academic reports.</p><div class="level">Guardian Level　→</div></a>
+<a class="dash-card" href="dashboard-deputy.html"><div class="dash-icon">♙</div><h3>Deputy Head</h3><p>Manage results approval and daily operations.</p><div class="level">Admin Level　→</div></a>
+</div>
+<div class="promo-grid" id="pricing"><article class="promo"><div class="promo-icon">🏛</div><div><h3>For Schools & Institutions</h3><p>Streamline operations with tools for school management and improved learning outcomes.</p><a class="btn-gold" href="registration.html">Register Institution&nbsp; →</a></div></article><article class="promo silver"><div class="promo-icon">💡</div><div><h3>For Educators & Creators</h3><p>Share knowledge, reach more learners and earn from your expertise.</p><a class="btn-gold" href="knowza-edu.html">Join as Creator&nbsp; →</a></div></article></div>
+</div></section>
+<section class="stats"><div class="wrap stats-grid"><div class="stat"><strong>One</strong><span>Connected Platform</span></div><div class="stat"><strong>SCZ</strong><span>School Management</span></div><div class="stat"><strong>KZE</strong><span>Learning & Creators</span></div><div class="stat"><strong>Zambia</strong><span>Built for Education</span></div><div class="stat"><strong>M.I.K-BRAINS</strong><span>Founder</span></div></div></section>
+<section class="closing"><div class="wrap closing-inner"><div><h2>Building a Smarter<br>Education Future Together</h2><p>SchoolConnect Zambia & KNOWZA EDU — empowering every learner, educator and school.</p></div><a class="btn-gold" href="registration.html">Get Started&nbsp; →</a><div class="closing-note">Better Education<br>Brighter Zambia ♡</div></div></section>
+</main>
+<footer><div class="wrap"><div class="footer-row"><a href="index.html" class="footer-brand"><img src="assets/scz-kze-logo.png" alt=""><span><strong>SchoolConnect Zambia & KNOWZA EDU</strong><br><small>One Platform • Endless Opportunities</small></span></a><div class="footer-links"><a href="index.html">Home</a><a href="about.html">About</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="contact.html">Contact</a><a href="knowza-edu.html">KNOWZA EDU</a></div></div><div class="copyright">© 2026 SchoolConnect Zambia & KNOWZA EDU. All rights reserved. · Some features remain under development.</div></div></footer>
+<script>
+const toggle=document.getElementById('mobile-menu-btn');const nav=document.getElementById('main-nav');
+toggle.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'✕':'☰';});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.textContent='☰';}));
+</script>
+</body></html>
