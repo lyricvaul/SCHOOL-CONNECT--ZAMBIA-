@@ -1,223 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Registrations | SCZ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Registrations | SCZ</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
 </head>
 
 <body class="bg-slate-100 text-slate-800">
-    <header class="bg-blue-950 text-white p-5">
-        <div class="max-w-5xl mx-auto">
-            <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
-            <p class="mt-1">Founder Portal — School Registrations</p>
-            <p class="text-sm text-blue-200">M.I.K-BRAINS</p>
+
+<header class="bg-blue-950 text-white p-5">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
+        <p class="mt-1">Founder Portal — School Registrations</p>
+        <p class="text-sm text-blue-200">M.I.K-BRAINS</p>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-5">
+
+    <a href="dashboard-founder.html"
+       class="inline-block mb-5 text-blue-800 underline">
+        ← Back to Founder Dashboard
+    </a>
+
+    <section class="bg-white rounded-xl border border-slate-200 p-5">
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-bold">School Registration Requests</h2>
+                <p class="text-slate-600 mt-2">
+                    Review applications before approving or rejecting them.
+                </p>
+            </div>
+
+            <button id="refreshButton"
+                    type="button"
+                    class="rounded-lg bg-blue-900 text-white px-4 py-2 hover:bg-blue-800">
+                Refresh requests
+            </button>
         </div>
-    </header>
 
-    <main class="max-w-5xl mx-auto p-5">
-        <a href="dashboard-founder.html"
-           class="inline-block mb-5 text-blue-800 underline">
-            ← Back to Founder Dashboard
-        </a>
+        <p id="status"
+           class="mt-5 text-sm whitespace-pre-wrap"
+           aria-live="polite">
+            Verifying founder access...
+        </p>
 
-        <section class="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 class="text-xl font-bold">School Registration Requests</h2>
+        <div id="results" class="mt-5 overflow-x-auto"></div>
 
-            <p class="text-slate-600 mt-2">
-                View school applications submitted to SchoolConnect Zambia.
-            </p>
+    </section>
+</main>
 
-            <p id="status"
-               class="mt-5 text-sm whitespace-pre-wrap"
-               aria-live="polite">
-                Verifying founder access...
-            </p>
+<dialog id="detailsDialog"
+        class="w-11/12 max-w-xl rounded-xl p-0 shadow-xl backdrop:bg-slate-950/50">
 
-            <div id="results" class="mt-5 overflow-x-auto"></div>
-        </section>
-    </main>
+    <div class="p-5">
+        <div class="flex items-start justify-between gap-4">
+            <h2 class="text-xl font-bold">Application details</h2>
 
-    <script>
-    async function start() {
-        const status = document.getElementById("status");
-        const results = document.getElementById("results");
-        const client = window.supabaseClient;
+            <button id="closeDetails"
+                    type="button"
+                    class="text-slate-500 text-2xl leading-none"
+                    aria-label="Close">
+                ×
+            </button>
+        </div>
 
-        try {
-            if (!client) {
-                throw new Error(
-                    "Supabase did not load. Check supabase.js and the connection."
-                );
-            }
+        <dl id="detailsContent"
+            class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        </dl>
 
-            // Check the current login session.
-            const {
-                data: sessionData,
-                error: sessionError
-            } = await client.auth.getSession();
+        <div class="mt-5 flex justify-end">
+            <button id="closeDetailsBottom"
+                    type="button"
+                    class="rounded-lg border px-4 py-2">
+                Close
+            </button>
+        </div>
+    </div>
+</dialog>
 
-            if (sessionError) throw sessionError;
+<script>
+let client = window.supabaseClient;
+let founderVerified = false;
 
-            const user = sessionData.session?.user;
+const statusEl = document.getElementById("status");
+const resultsEl = document.getElementById("results");
+const dialog = document.getElementById("detailsDialog");
+const detailsContent = document.getElementById("detailsContent");
 
-            if (!user) {
-                window.location.replace("login.html");
-                return;
-            }
+function setStatus(message, error = false) {
+    statusEl.textContent = message;
 
-            // Verify that this account belongs to the platform founder.
-            const {
-                data: founder,
-                error: founderError
-            } = await client
-                .from("platform_admins")
-                .select("user_id, full_name, role")
-                .eq("user_id", user.id)
-                .maybeSingle();
+    statusEl.className =
+        "mt-5 text-sm whitespace-pre-wrap " +
+        (error ? "text-red-700" : "text-slate-600");
+}
 
-            if (founderError) throw founderError;
+function button(label, style, handler) {
+    const b = document.createElement("button");
 
-            if (
-                !founder ||
-                founder.role !== "founder" ||
-                founder.full_name !== "M.I.K-BRAINS"
-            ) {
-                status.textContent =
-                    "Access denied. Founder access could not be verified.";
-                return;
-            }
+    b.type = "button";
+    b.textContent = label;
+    b.className = style;
 
-            status.textContent =
-                "Founder access verified. Loading registration requests...";
+    b.addEventListener("click", handler);
 
-            // Load applications using the actual submission timestamp column.
-            const {
-                data,
-                error: registrationError
-            } = await client
-                .from("school_registration_requests")
-                .select(
-                    "id, school_name, institution_type, province, district, status, submitted_at, school_code"
-                )
-                .order("submitted_at", { ascending: false });
+    return b;
+}
 
-            if (registrationError) {
-                console.error(
-                    "Registration query failed:",
-                    registrationError
-                );
+function showDetails(r) {
+    detailsContent.replaceChildren();
 
-                status.textContent =
-                    "Founder access verified, but registration requests could not be loaded.\n\n" +
-                    "Error: " + registrationError.message +
-                    (registrationError.code
-                        ? "\nCode: " + registrationError.code
-                        : "") +
-                    (registrationError.details
-                        ? "\nDetails: " + registrationError.details
-                        : "") +
-                    (registrationError.hint
-                        ? "\nHint: " + registrationError.hint
-                        : "");
+    const fields = [
+        ["School name", r.school_name],
+        ["Institution type", r.institution_type],
+        ["Province", r.province],
+        ["District", r.district],
+        ["School email", r.school_email],
+        ["Status", r.status],
+        ["SCZ school code", r.school_code],
+        [
+            "Date submitted",
+            r.submitted_at
+                ? new Date(r.submitted_at).toLocaleString()
+                : null
+        ],
+        ["Request ID", r.id]
+    ];
 
-                return;
-            }
+    fields.forEach(([label, value]) => {
+        const box = document.createElement("div");
 
-            results.replaceChildren();
+        box.className =
+            "rounded-lg bg-slate-50 p-3 border border-slate-200";
 
-            if (!data || data.length === 0) {
-                status.textContent =
-                    "No registration requests found. New applications will appear here when submitted.";
-                return;
-            }
+        const dt = document.createElement("dt");
+        dt.className =
+            "text-xs uppercase tracking-wide text-slate-500";
+        dt.textContent = label;
 
-            // Build the table safely without inserting database text as HTML.
-            const table = document.createElement("table");
-            table.className =
-                "w-full text-sm text-left border-collapse";
+        const dd = document.createElement("dd");
+        dd.className = "mt-1 break-words font-medium";
 
-            const columns = [
-                ["school_code", "School Code"],
-                ["school_name", "School Name"],
-                ["institution_type", "Institution Type"],
-                ["province", "Province"],
-                ["district", "District"],
-                ["status", "Application Status"],
-                ["submitted_at", "Date Submitted"]
-            ];
+        dd.textContent =
+            value == null || value === ""
+                ? "—"
+                : String(value);
 
-            const thead = document.createElement("thead");
-            thead.className = "bg-slate-100";
+        box.append(dt, dd);
+        detailsContent.appendChild(box);
+    });
 
-            const headerRow = document.createElement("tr");
+    if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+    } else {
+        alert(
+            fields
+                .map(([k, v]) => k + ": " + (v || "—"))
+                .join("\n")
+        );
+    }
+}
 
-            columns.forEach(([, label]) => {
-                const th = document.createElement("th");
-                th.className =
-                    "p-3 border border-slate-200 font-semibold";
-                th.textContent = label;
-                headerRow.appendChild(th);
-            });
+function closeDialog() {
+    if (dialog.open) {
+        dialog.close();
+    }
+}
 
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-
-            const tbody = document.createElement("tbody");
-
-            data.forEach(record => {
-                const row = document.createElement("tr");
-                row.className = "hover:bg-slate-50";
-
-                columns.forEach(([key]) => {
-                    const cell = document.createElement("td");
-                    cell.className =
-                        "p-3 border border-slate-200";
-
-                    const value = record[key];
-
-                    if (key === "submitted_at" && value) {
-                        const date = new Date(value);
-
-                        cell.textContent = Number.isNaN(date.getTime())
-                            ? String(value)
-                            : date.toLocaleString();
-                    } else {
-                        cell.textContent =
-                            value === null || value === undefined || value === ""
-                                ? "—"
-                                : String(value);
-                    }
-
-                    row.appendChild(cell);
-                });
-
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(tbody);
-            results.appendChild(table);
-
-            status.textContent =
-                "Successfully loaded " +
-                data.length +
-                " registration request(s).";
-
-        } catch (error) {
-            console.error("School registration page error:", error);
-
-            status.textContent =
-                "Unable to load registrations.\n\n" +
-                "Error: " +
-                (error.message || "An unexpected error occurred.");
-        }
+async function decide(r, decision) {
+    if (!founderVerified) {
+        setStatus(
+            "Action blocked: founder access has not been verified.",
+            true
+        );
+        return;
     }
 
-    start();
-    </script>
-</body>
-    </html>
+    if (r.status !== "
