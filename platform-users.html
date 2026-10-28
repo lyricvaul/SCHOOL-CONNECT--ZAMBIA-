@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Users | SchoolConnect Zambia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+<header class="bg-blue-950 text-white p-5">
+  <div class="max-w-6xl mx-auto">
+    <p class="text-sm text-blue-200">SCHOOLCONNECT ZAMBIA</p>
+    <h1 class="text-2xl font-bold">Platform Users</h1>
+    <p class="text-sm text-blue-200 mt-1">Founder Portal — M.I.K-BRAINS</p>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-5">
+  <a href="dashboard-founder.html"
+     class="inline-block mb-5 text-blue-800 underline">
+    ← Back to Founder Dashboard
+  </a>
+
+  <section class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="flex flex-wrap justify-between items-center gap-3">
+      <div>
+        <h2 class="text-xl font-bold">Platform Accounts</h2>
+        <p class="text-slate-600 mt-2">
+          View registered user profiles and their roles.
+        </p>
+      </div>
+      <button id="refresh"
+        class="rounded-lg bg-blue-900 text-white px-4 py-2">
+        Refresh users
+      </button>
+    </div>
+
+    <p id="message" class="mt-5 text-sm whitespace-pre-wrap"
+       aria-live="polite">Checking access...</p>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-left">
+        <thead class="bg-slate-100">
+          <tr>
+            <th class="p-3">Name</th>
+            <th class="p-3">Role</th>
+            <th class="p-3">Profile ID</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="text-xs text-slate-500 mt-4">
+      Read-only page. Account permissions are enforced by Supabase.
+    </p>
+  </section>
+</main>
+
+<script>
+(async () => {
+  const message = document.getElementById("message");
+  const rows = document.getElementById("rows");
+  const refresh = document.getElementById("refresh");
+  const client = window.supabaseClient;
+
+  const say = text => message.textContent = text;
+
+  if (!client) {
+    say("Supabase client unavailable. Check supabase.js.");
+    return;
+  }
+
+  try {
+    const { data: sessionData, error: sessionError } =
+      await client.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    if (!sessionData.session) {
+      location.href = "login.html";
+      return;
+    }
+
+    const { data: founder, error: founderError } = await client
+      .from("platform_admins")
+      .select("full_name, role")
+      .eq("user_id", sessionData.session.user.id)
+      .maybeSingle();
+
+    if (founderError) throw founderError;
+
+    if (!founder ||
+        founder.role !== "founder" ||
+        founder.full_name !== "M.I.K-BRAINS") {
+      say("Founder access denied.");
+      refresh.disabled = true;
+      return;
+    }
+
+    async function loadUsers() {
+      refresh.disabled = true;
+      rows.replaceChildren();
+      say("Loading user profiles...");
+
+      try {
+        const { data, error } = await client
+          .from("profiles")
+          .select("id, full_name, role")
+          .order("full_name", { ascending: true })
+          .limit(500);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          say("No profiles returned. Check the profiles table and its RLS policies.");
+          return;
+        }
+
+        data.forEach(user => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b";
+
+          [user.full_name || "—", user.role || "—", user.id || "—"]
+            .forEach(value => {
+              const td = document.createElement("td");
+              td.className = "p-3 text-sm";
+              td.textContent = value;
+              tr.appendChild(td);
+            });
+
+          rows.appendChild(tr);
+        });
+
+        say("Loaded " + data.length + " profile(s).");
+      } catch (error) {
+        say("Could not load profiles: " + error.message);
+      } finally {
+        refresh.disabled = false;
+      }
+    }
+
+    refresh.addEventListener("click", loadUsers);
+    await loadUsers();
+
+  } catch (error) {
+    say("Setup check failed: " + error.message);
+  }
+})();
+</script>
+</body>
+    </html>
