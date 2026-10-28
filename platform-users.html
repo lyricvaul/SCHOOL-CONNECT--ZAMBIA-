@@ -2,47 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Platform Users | SchoolConnect Zambia</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
 </head>
 
-<body class="bg-slate-100 text-slate-800">
-<header class="bg-blue-950 text-white p-5">
-  <div class="max-w-6xl mx-auto">
-    <p class="text-sm text-blue-200">SCHOOLCONNECT ZAMBIA</p>
-    <h1 class="text-2xl font-bold">Platform Users</h1>
-    <p class="text-sm text-blue-200 mt-1">Founder Portal — M.I.K-BRAINS</p>
-  </div>
-</header>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+  <header class="bg-slate-900 text-white p-5">
+    <div class="max-w-5xl mx-auto">
+      <h1 class="text-2xl font-bold">SchoolConnect Zambia</h1>
+      <p class="text-slate-300">Founder Control Centre</p>
+    </div>
+  </header>
 
-<main class="max-w-6xl mx-auto p-5">
-  <a href="dashboard-founder.html"
-     class="inline-block mb-5 text-blue-800 underline">
-    ← Back to Founder Dashboard
-  </a>
+  <main class="max-w-5xl mx-auto p-4 sm:p-6">
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+      <h2 class="text-xl font-bold">Platform Users</h2>
+      <p class="text-sm text-slate-600 mt-1">
+        View registered profiles and their recognised platform roles.
+      </p>
 
-  <section class="bg-white rounded-xl border border-slate-200 p-5">
-    <div class="flex flex-wrap justify-between items-center gap-3">
-      <div>
-        <h2 class="text-xl font-bold">Platform Accounts</h2>
-        <p class="text-slate-600 mt-2">
-          View registered user profiles and their roles.
-        </p>
+      <div id="status"
+           role="status"
+           aria-live="polite"
+           class="mt-4 p-3 rounded-lg bg-blue-50 text-blue-900">
+        Checking founder access...
       </div>
-      <button id="refresh"
-        class="rounded-lg bg-blue-900 text-white px-4 py-2">
-        Refresh users
-      </button>
+
+      <div class="flex flex-wrap gap-3 mt-4">
+        <button id="refresh"
+          class="rounded-lg bg-blue-700 text-white px-4 py-3">
+          Refresh users
+        </button>
+
+        <a href="dashboard-founder.html"
+          class="rounded-lg border border-slate-300 px-4 py-3">
+          Back to Founder Dashboard
+        </a>
+      </div>
     </div>
 
-    <p id="message" class="mt-5 text-sm whitespace-pre-wrap"
-       aria-live="polite">Checking access...</p>
-
-    <div class="mt-4 overflow-x-auto">
-      <table class="min-w-full text-left">
+    <div class="bg-white rounded-xl shadow-sm p-4 overflow-x-auto">
+      <table class="w-full text-sm text-left">
         <thead class="bg-slate-100">
           <tr>
             <th class="p-3">Name</th>
@@ -50,106 +53,202 @@
             <th class="p-3">Profile ID</th>
           </tr>
         </thead>
-        <tbody id="rows"></tbody>
+        <tbody id="users">
+          <tr>
+            <td colspan="3" class="p-4">Loading users...</td>
+          </tr>
+        </tbody>
       </table>
     </div>
-
-    <p class="text-xs text-slate-500 mt-4">
-      Read-only page. Account permissions are enforced by Supabase.
-    </p>
-  </section>
-</main>
+  </main>
 
 <script>
-(async () => {
-  const message = document.getElementById("message");
-  const rows = document.getElementById("rows");
-  const refresh = document.getElementById("refresh");
-  const client = window.supabaseClient;
+const client = window.supabaseClient;
+const statusBox = document.getElementById("status");
+const usersBody = document.getElementById("users");
+const founderId = "cbd23269-8930-45f2-ba98-06466b612fc8";
 
-  const say = text => message.textContent = text;
+let founderVerified = false;
 
-  if (!client) {
-    say("Supabase client unavailable. Check supabase.js.");
-    return;
-  }
+function showStatus(message, isError = false) {
+  statusBox.textContent = message;
+  statusBox.className = "mt-4 p-3 rounded-lg " +
+    (isError
+      ? "bg-red-50 text-red-800"
+      : "bg-blue-50 text-blue-900");
+}
+
+function addCell(row, value) {
+  const cell = document.createElement("td");
+  cell.className = "p-3 border-t border-slate-100";
+  cell.textContent = value ?? "";
+  row.appendChild(cell);
+}
+
+async function loadUsers() {
+  if (!founderVerified) return;
+
+  showStatus("Loading profiles...");
+  usersBody.replaceChildren();
 
   try {
-    const { data: sessionData, error: sessionError } =
-      await client.auth.getSession();
+    const [profilesResult, adminsResult] = await Promise.all([
+      client.from("profiles")
+        .select("id, full_name, role")
+        .order("full_name"),
 
-    if (sessionError) throw sessionError;
+      client.from("platform_admins")
+        .select("user_id, full_name, role")
+    ]);
 
-    if (!sessionData.session) {
-      location.href = "login.html";
+    if (profilesResult.error) throw profilesResult.error;
+    if (adminsResult.error) throw adminsResult.error;
+
+    const profiles = profilesResult.data || [];
+    const admins = adminsResult.data || [];
+
+    const adminById = new Map(
+      admins.map(admin => [admin.user_id, admin])
+    );
+
+    // Make sure the founder is shown even if their profile role
+    // still says "student" in the profiles table.
+    const founderAdmin = admins.find(
+      admin =>
+        admin.user_id === founderId &&
+        admin.role === "founder" &&
+        admin.full_name === "M.I.K-BRAINS"
+    );
+
+    if (!founderAdmin) {
+      throw new Error(
+        "The protected founder record could not be verified."
+      );
+    }
+
+    const rows = profiles.map(profile => {
+      const admin = adminById.get(profile.id);
+
+      return {
+        id: profile.id,
+        name: admin ? admin.full_name : profile.full_name,
+        role: admin ? admin.role : profile.role
+      };
+    });
+
+    // If the founder record exists but the profile is missing,
+    // show the founder record without inventing a profile.
+    if (!rows.some(row => row.id === founderId)) {
+      rows.unshift({
+        id: founderId,
+        name: founderAdmin.full_name,
+        role: founderAdmin.role
+      });
+    }
+
+    if (rows.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 3;
+      cell.className = "p-4";
+      cell.textContent = "No profiles found.";
+      row.appendChild(cell);
+      usersBody.appendChild(row);
+    }
+
+    rows.forEach(user => {
+      const row = document.createElement("tr");
+
+      addCell(row, user.name || "Unnamed user");
+
+      const roleCell = document.createElement("td");
+      roleCell.className = "p-3 border-t border-slate-100";
+
+      if (user.id === founderId && user.role === "founder") {
+        const badge = document.createElement("span");
+        badge.className =
+          "inline-block rounded-full bg-purple-100 text-purple-800 px-3 py-1 font-semibold";
+        badge.textContent = "Founder";
+        roleCell.appendChild(badge);
+      } else {
+        roleCell.textContent = user.role || "Unassigned";
+      }
+
+      row.appendChild(roleCell);
+      addCell(row, user.id);
+      usersBody.appendChild(row);
+    });
+
+    showStatus(
+      "Founder verified. Loaded " + rows.length +
+      " account record(s). Founder role is read from platform_admins."
+    );
+  } catch (error) {
+    console.error("Platform Users error:", error);
+    showStatus(
+      "Unable to load users: " + error.message +
+      ". Check your connection and database permissions.",
+      true
+    );
+  }
+}
+
+async function start() {
+  try {
+    if (!client) {
+      throw new Error(
+        "Supabase connection missing. Check supabase.js."
+      );
+    }
+
+    const { data, error } = await client.auth.getSession();
+    if (error) throw error;
+
+    const user = data.session?.user;
+
+    if (!user) {
+      showStatus("Please sign in with your founder account.");
+      window.location.replace("login.html");
       return;
     }
 
-    const { data: founder, error: founderError } = await client
+    const { data: admin, error: adminError } = await client
       .from("platform_admins")
-      .select("full_name, role")
-      .eq("user_id", sessionData.session.user.id)
+      .select("user_id, full_name, role")
+      .eq("user_id", user.id)
       .maybeSingle();
 
-    if (founderError) throw founderError;
+    if (adminError) throw adminError;
 
-    if (!founder ||
-        founder.role !== "founder" ||
-        founder.full_name !== "M.I.K-BRAINS") {
-      say("Founder access denied.");
-      refresh.disabled = true;
+    if (
+      !admin ||
+      admin.role !== "founder" ||
+      admin.full_name !== "M.I.K-BRAINS" ||
+      admin.user_id !== founderId
+    ) {
+      showStatus("Access denied. Founder account not verified.", true);
+      usersBody.replaceChildren();
       return;
     }
 
-    async function loadUsers() {
-      refresh.disabled = true;
-      rows.replaceChildren();
-      say("Loading user profiles...");
-
-      try {
-        const { data, error } = await client
-          .from("profiles")
-          .select("id, full_name, role")
-          .order("full_name", { ascending: true })
-          .limit(500);
-
-        if (error) throw error;
-
-        if (!data || data.length === 0) {
-          say("No profiles returned. Check the profiles table and its RLS policies.");
-          return;
-        }
-
-        data.forEach(user => {
-          const tr = document.createElement("tr");
-          tr.className = "border-b";
-
-          [user.full_name || "—", user.role || "—", user.id || "—"]
-            .forEach(value => {
-              const td = document.createElement("td");
-              td.className = "p-3 text-sm";
-              td.textContent = value;
-              tr.appendChild(td);
-            });
-
-          rows.appendChild(tr);
-        });
-
-        say("Loaded " + data.length + " profile(s).");
-      } catch (error) {
-        say("Could not load profiles: " + error.message);
-      } finally {
-        refresh.disabled = false;
-      }
-    }
-
-    refresh.addEventListener("click", loadUsers);
+    founderVerified = true;
     await loadUsers();
 
   } catch (error) {
-    say("Setup check failed: " + error.message);
+    console.error("Founder verification error:", error);
+    showStatus(
+      "Founder verification failed: " + error.message,
+      true
+    );
   }
-})();
+}
+
+document.getElementById("refresh").addEventListener(
+  "click",
+  loadUsers
+);
+
+start();
 </script>
 </body>
     </html>
