@@ -4,17 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080710">
-
   <title>Security Centre | SchoolConnect Zambia</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
 
   <style>
     :root {
       --black: #080710;
       --panel: #10101d;
-      --panel2: #171326;
       --purple: #8b35db;
       --purple-light: #e4baff;
       --gold: #f5c84c;
@@ -23,35 +18,19 @@
       --muted: #aaa7bd;
       --border: #383148;
       --green: #43e58b;
-      --red: #ff707b;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background:
-        radial-gradient(ellipse at top left, #29104b 0, transparent 35%),
-        var(--black);
+      background: radial-gradient(ellipse at top left, #29104b 0, transparent 35%), var(--black);
       color: var(--white);
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.55;
+      font: 16px/1.55 Arial, Helvetica, sans-serif;
     }
 
-    button, a {
-      font: inherit;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    a, button { font: inherit; }
+    a { color: inherit; text-decoration: none; }
 
     .topbar {
       padding: 15px 20px;
@@ -60,7 +39,7 @@
     }
 
     .topbar-inner {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: auto;
       display: flex;
       align-items: center;
@@ -74,46 +53,24 @@
       font-weight: 900;
     }
 
-    .brand span {
-      color: var(--gold);
-    }
-
-    .brand-sub {
-      color: var(--silver);
-      font-size: 12px;
-    }
+    .brand span { color: var(--gold); }
+    .brand-sub { color: var(--silver); font-size: 12px; }
 
     .founder-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
       padding: 8px 15px;
       border: 1px solid var(--purple);
       border-radius: 30px;
       background: #160d25;
     }
 
-    .crown {
-      color: var(--gold);
-      font-size: 23px;
-    }
-
-    .role-badge {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 25px;
-      background: var(--purple);
-      color: white;
-      font-size: 12px;
-      font-weight: 800;
-    }
+    .crown { color: var(--gold); font-size: 23px; }
 
     .layout {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: auto;
+      min-height: 85vh;
       display: grid;
       grid-template-columns: 190px minmax(0, 1fr);
-      min-height: 85vh;
     }
 
     aside {
@@ -140,28 +97,16 @@
     }
 
     .side-founder {
-      margin-top: 40px;
+      margin-top: 35px;
       padding: 15px 5px;
       text-align: center;
       border-top: 1px solid var(--border);
     }
 
-    .side-founder .crown {
-      font-size: 35px;
-    }
+    .side-founder strong { display: block; }
+    .side-founder small { color: var(--purple-light); }
 
-    .side-founder strong {
-      display: block;
-    }
-
-    .side-founder small {
-      color: var(--purple-light);
-    }
-
-    main {
-      min-width: 0;
-      padding: 22px;
-    }
+    main { min-width: 0; padding: 22px; }
 
     .page-actions {
       display: flex;
@@ -189,6 +134,7 @@
       background: var(--panel);
       color: var(--silver);
       padding: 9px 13px;
+      cursor: pointer;
     }
 
     .button:hover {
@@ -197,27 +143,11 @@
     }
 
     .hero {
-      position: relative;
-      overflow: hidden;
       padding: 25px;
       margin-bottom: 18px;
       border: 1px solid #50316e;
       border-radius: 20px;
-      background:
-        radial-gradient(ellipse at right, #522078 0, transparent 55%),
-        linear-gradient(120deg, #171025, #080913);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 5px;
-      right: -35px;
-      bottom: 18px;
-      background: linear-gradient(90deg, var(--purple), var(--gold));
-      transform: rotate(-20deg);
-      opacity: .85;
+      background: radial-gradient(ellipse at right, #522078 0, transparent 55%), linear-gradient(120deg, #171025, #080913);
     }
 
     .eyebrow {
@@ -234,28 +164,17 @@
       margin: 10px 0;
     }
 
-    h1 span {
-      color: var(--gold);
-    }
-
-    .hero p {
-      color: var(--silver);
-      max-width: 670px;
-      margin-bottom: 0;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin: 24px 0 12px;
-    }
+    h1 span { color: var(--gold); }
+    .hero p, .card p { color: var(--silver); }
+    h2 { font-size: 20px; margin: 24px 0 12px; }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
-    .card {
+    .card, .panel {
       min-width: 0;
       padding: 16px;
       border: 1px solid var(--border);
@@ -263,40 +182,15 @@
       background: linear-gradient(145deg, #131321, #0b0b14);
     }
 
-    .card.gold-edge {
-      border-top: 2px solid #8f7129;
-    }
+    .gold-edge { border-top: 2px solid #8f7129; }
+    .purple-edge { border-top: 2px solid var(--purple); }
 
-    .card.purple-edge {
-      border-top: 2px solid var(--purple);
-    }
-
-    .icon {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--purple);
-      border-radius: 50%;
-      color: var(--purple-light);
-      font-size: 21px;
-      margin-bottom: 9px;
-    }
-
-    .gold-edge .icon {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-
-    .card h3 {
-      font-size: 14px;
-      margin: 5px 0;
-    }
+    .card h3 { font-size: 15px; margin: 5px 0; }
 
     .card p {
-      color: var(--muted);
       font-size: 13px;
       margin: 3px 0 9px;
+      color: var(--muted);
       overflow-wrap: anywhere;
     }
 
@@ -311,37 +205,11 @@
       border: 1px solid #286444;
     }
 
-    .status.pending {
-      color: var(--gold);
-      background: #29210e;
-      border-color: #72581b;
-    }
-
-    .status.unknown {
-      color: var(--silver);
-      background: #20202d;
-      border-color: #56566b;
-    }
-
-    .status.failed {
-      color: var(--red);
-      background: #32151c;
-      border-color: #75313c;
-    }
-
     .columns {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 15px;
       margin-top: 18px;
-    }
-
-    .panel {
-      min-width: 0;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      background: linear-gradient(145deg, #11111f, #090912);
     }
 
     .panel h2 {
@@ -350,60 +218,14 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .check-row,
-    .data-row,
-    .pending-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
+    .row {
       padding: 10px 0;
       border-bottom: 1px solid #272536;
       font-size: 13px;
-    }
-
-    .check-row:last-child,
-    .data-row:last-child,
-    .pending-row:last-child {
-      border-bottom: 0;
-    }
-
-    .check-row .label {
-      min-width: 0;
       overflow-wrap: anywhere;
     }
 
-    .tick {
-      color: var(--green);
-      font-weight: 900;
-      margin-right: 8px;
-    }
-
-    .warning {
-      color: var(--gold);
-      font-weight: 900;
-      margin-right: 8px;
-    }
-
-    .data-row .key {
-      color: var(--muted);
-      flex: 0 0 36%;
-    }
-
-    .data-row .value {
-      text-align: right;
-      overflow-wrap: anywhere;
-    }
-
-    .reminders {
-      padding-left: 20px;
-      color: var(--silver);
-      font-size: 13px;
-    }
-
-    .reminders li {
-      padding: 5px 0;
-    }
+    .row:last-child { border-bottom: 0; }
 
     .gold-box {
       border: 1px solid var(--gold);
@@ -415,31 +237,7 @@
       font-size: 13px;
     }
 
-    .gold-box p {
-      margin: 4px 0 0;
-      color: var(--silver);
-    }
-
-    .footer-banner {
-      margin-top: 18px;
-      padding: 17px;
-      border: 1px solid var(--gold);
-      border-radius: 15px;
-      background: linear-gradient(100deg, #2a1b0b, #140e20, #3a2260);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .footer-banner strong {
-      color: var(--gold);
-    }
-
-    .footer-banner small {
-      color: var(--silver);
-    }
+    .gold-box p { margin: 4px 0 0; color: var(--silver); }
 
     footer {
       padding: 20px;
@@ -449,8 +247,7 @@
       border-top: 1px solid var(--border);
     }
 
-    #loading,
-    #access-error {
+    #loading, #access-error {
       max-width: 650px;
       margin: 40px auto;
       padding: 22px;
@@ -459,39 +256,327 @@
       background: var(--panel);
     }
 
-    #access-error {
-      display: none;
-      border-color: var(--gold);
+    #access-error { display: none; border-color: var(--gold); }
+    #dashboard { display: none; }
+
+    .error-text {
+      color: var(--silver);
+      overflow-wrap: anywhere;
     }
 
-    #dashboard {
-      display: none;
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
     }
 
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .layout {
-        grid-template-columns: 145px minmax(0, 1fr);
-      }
-
-      main {
-        padding: 15px;
-      }
-
-      aside {
-        padding: 15px 8px;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .layout {
-        display: block;
-      }
+    @media (max-width: 700px) {
+      .layout { display: block; }
 
       aside {
         border-right: 0;
         border-bottom: 1px solid var(--border);
-        padding: 9
+        padding: 9px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        margin: 0;
+        padding: 8px;
+        font-size: 12px;
+      }
+
+      .side-founder { display: none; }
+      main { padding: 14px; }
+      .columns { grid-template-columns: 1fr; }
+      .hero { padding: 19px; }
+    }
+
+    @media (max-width: 380px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <div class="brand">SCHOOLCONNECT <span>ZAMBIA</span></div>
+        <div class="brand-sub">Secure school management for Zambia</div>
+      </div>
+
+      <div class="founder-chip">
+        <span class="crown">♛</span>
+        <strong>M.I.K-BRAINS</strong>
+      </div>
+    </div>
+  </header>
+
+  <section id="loading" role="status" aria-live="polite">
+    <h2>🔐 Verifying founder access…</h2>
+    <p>Please wait while we check your signed-in account.</p>
+  </section>
+
+  <section id="access-error" role="alert">
+    <h2>Founder access could not be verified</h2>
+    <p id="error-message" class="error-text">
+      The page could not verify your account.
+    </p>
+
+    <div class="actions">
+      <a class="button" href="login.html">Go to login</a>
+      <button class="button" id="retry-button" type="button">Try again</button>
+      <button class="button" id="refresh-button" type="button">Refresh page</button>
+    </div>
+  </section>
+
+  <div id="dashboard">
+    <div class="layout">
+
+      <aside aria-label="Founder navigation">
+        <a class="nav-link" href="dashboard-founder.html">🏠 Founder Dashboard</a>
+        <a class="nav-link" href="platform-users.html">👥 Platform Users</a>
+        <a class="nav-link" href="school-registrations.html">🏫 School Registrations</a>
+        <a class="nav-link active" href="security-centre.html">🔐 Security Centre</a>
+        <a class="nav-link" href="knowza-edu.html">📚 KNOWZA EDU</a>
+        <a class="nav-link" href="index.html">🌐 Main Website</a>
+
+        <div class="side-founder">
+          <div class="crown">♛</div>
+          <strong>M.I.K-BRAINS</strong>
+          <small>Platform Founder</small>
+        </div>
+      </aside>
+
+      <main>
+        <div class="page-actions">
+          <span class="badge">🔐 FOUNDER SECURITY</span>
+          <a class="button" href="dashboard-founder.html">← Back to Founder Dashboard</a>
+        </div>
+
+        <section class="hero">
+          <div class="eyebrow">Private administration area</div>
+          <h1>Security <span>Centre</span></h1>
+          <p>
+            Review the basic security status of your SchoolConnect Zambia platform.
+            Access to this page is checked against your founder record.
+          </p>
+        </section>
+
+        <h2>Security overview</h2>
+
+        <div class="grid">
+          <article class="card gold-edge">
+            <h3>Founder identity</h3>
+            <p id="founder-name">M.I.K-BRAINS</p>
+            <span class="status">VERIFIED</span>
+          </article>
+
+          <article class="card purple-edge">
+            <h3>Signed-in account</h3>
+            <p id="founder-email">Verified account</p>
+            <span class="status">AUTHENTICATED</span>
+          </article>
+
+          <article class="card purple-edge">
+            <h3>Founder database check</h3>
+            <p>Matched against the platform_admins table.</p>
+            <span class="status">PASSED</span>
+          </article>
+
+          <article class="card gold-edge">
+            <h3>Database protection</h3>
+            <p>Table access must also be enforced by Supabase Row Level Security policies.</p>
+            <span class="status">CHECK POLICIES</span>
+          </article>
+        </div>
+
+        <div class="columns">
+          <section class="panel">
+            <h2>Security checklist</h2>
+            <div class="row">✓ Keep your Supabase service-role key private. Never put it in website files.</div>
+            <div class="row">✓ Use the publishable key in the browser with appropriate Row Level Security policies.</div>
+            <div class="row">✓ Require database-side authorization for sensitive founder actions.</div>
+            <div class="row">✓ Use a strong, unique password for your founder account.</div>
+          </section>
+
+          <section class="panel">
+            <h2>Current account</h2>
+            <div class="row"><strong>Founder name:</strong> <span id="account-name">M.I.K-BRAINS</span></div>
+            <div class="row"><strong>Email:</strong> <span id="account-email">Loading…</span></div>
+            <div class="row"><strong>User ID:</strong> <span id="account-id">Loading…</span></div>
+
+            <div class="gold-box">
+              <strong>Important</strong>
+              <p>This page check does not replace database RLS. Every sensitive table and function must enforce permissions independently.</p>
+            </div>
+          </section>
+        </div>
+
+        <div class="gold-box">
+          <strong>Founder reminder</strong>
+          <p>Only share the public publishable key. Do not share passwords, email verification codes, or service-role secrets.</p>
+        </div>
+      </main>
+    </div>
+
+    <footer>SchoolConnect Zambia · Founder Security Centre · M.I.K-BRAINS</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const FOUNDER_ID = 'cbd23269-8930-45f2-ba98-06466b612fc8';
+
+      const loading = document.getElementById('loading');
+      const errorBox = document.getElementById('access-error');
+      const dashboard = document.getElementById('dashboard');
+      const errorMessage = document.getElementById('error-message');
+
+      function showError(message) {
+        loading.style.display = 'none';
+        dashboard.style.display = 'none';
+        errorBox.style.display = 'block';
+        errorMessage.textContent = message;
+      }
+
+      async function withTimeout(promise, ms, label) {
+        let timer;
+
+        try {
+          return await Promise.race([
+            promise,
+            new Promise((_, reject) => {
+              timer = setTimeout(
+                () => reject(new Error(
+                  label + ' timed out. Check your internet connection and try again.'
+                )),
+                ms
+              );
+            })
+          ]);
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      async function checkFounder() {
+        loading.style.display = 'block';
+        errorBox.style.display = 'none';
+        dashboard.style.display = 'none';
+
+        try {
+          if (
+            !window.supabase ||
+            !window.supabaseClient ||
+            !window.supabaseClient.auth
+          ) {
+            throw new Error(
+              'Supabase did not load. Check that supabase.js exists in the same GitHub Pages folder and that you have internet access.'
+            );
+          }
+
+          const client = window.supabaseClient;
+
+          const authResult = await withTimeout(
+            client.auth.getUser(),
+            12000,
+            'Sign-in check'
+          );
+
+          if (authResult.error) throw authResult.error;
+
+          const user = authResult.data && authResult.data.user;
+
+          if (!user) {
+            throw new Error(
+              'You are not signed in. Please sign in with your founder account, then return to this page.'
+            );
+          }
+
+          if (user.id !== FOUNDER_ID) {
+            throw new Error(
+              'The signed-in account is not the registered founder account. Sign out and use your authorised founder login.'
+            );
+          }
+
+          const adminResult = await withTimeout(
+            client
+              .from('platform_admins')
+              .select('user_id, full_name, role')
+              .eq('user_id', user.id)
+              .eq('role', 'founder')
+              .eq('full_name', 'M.I.K-BRAINS')
+              .maybeSingle(),
+            12000,
+            'Founder database check'
+          );
+
+          if (adminResult.error) {
+            throw new Error(
+              'Could not read the founder record: ' +
+              adminResult.error.message +
+              '. Check the platform_admins SELECT policy for the signed-in founder.'
+            );
+          }
+
+          if (!adminResult.data) {
+            throw new Error(
+              'The signed-in user has no matching founder record in platform_admins. Check the user_id, role and full_name values.'
+            );
+          }
+
+          document.getElementById('founder-email').textContent =
+            user.email || 'Email not available';
+
+          document.getElementById('account-email').textContent =
+            user.email || 'Email not available';
+
+          document.getElementById('account-id').textContent = user.id;
+
+          document.getElementById('founder-name').textContent =
+            adminResult.data.full_name;
+
+          document.getElementById('account-name').textContent =
+            adminResult.data.full_name;
+
+          loading.style.display = 'none';
+          errorBox.style.display = 'none';
+          dashboard.style.display = 'block';
+
+        } catch (err) {
+          console.error('Security Centre verification error:', err);
+
+          showError(
+            err && err.message
+              ? err.message
+              : 'An unexpected error occurred during founder verification.'
+          );
+        }
+      }
+
+      document
+        .getElementById('retry-button')
+        .addEventListener('click', checkFounder);
+
+      document
+        .getElementById('refresh-button')
+        .addEventListener('click', function () {
+          window.location.reload();
+        });
+
+      checkFounder();
+    })();
+  </script>
+
+</body>
+            </html>
